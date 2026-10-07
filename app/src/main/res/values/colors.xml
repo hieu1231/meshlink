@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Field-gear palette: dark navy ink + high-vis signal yellow, on a cool mist ground. -->
+    <color name="ink">#15232F</color>
+    <color name="ink_soft">#56656F</color>
+    <color name="signal">#FFC21A</color>
+    <color name="on_signal">#2B2100</color>
+    <color name="signal_soft">#FFE7A3</color>
+
+    <color name="surface">#F4F6F7</color>
+    <color name="surface_lowest">#FFFFFF</color>
+    <color name="surface_low">#EEF1F3</color>
+    <color name="surface_mid">#E8ECEF</color>
+    <color name="surface_high">#E1E6EA</color>
+    <color name="surface_highest">#DAE0E5</color>
+    <color name="outline">#8A979F</color>
+    <color name="outline_soft">#C9D1D6</color>
+
+    <color name="primary">#1C2E3D</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#DCE6EE</color>
+    <color name="on_primary_container">#0E1A24</color>
+
+    <color name="bubble_out">#1C2E3D</color>
+    <color name="on_bubble_out">#F4F6F7</color>
+
+    <color name="status_online">#1E8E5A</color>
+    <color name="status_offline">#8A979F</color>
+
+    <color name="category_sos">#D7263D</color>
+    <color name="category_safe">#1E8E5A</color>
+    <color name="category_resource">#2F6FDE</color>
+    <color name="category_info">#6E5A8F</color>
+    <color name="sos_wash">#FCE8EA</color>
+    <!-- SOS button stays deep red in both themes so white text keeps full contrast. -->
+    <color name="sos_button">#D7263D</color>
+    <!-- Call screen: always dark, whatever the theme. -->
+    <color name="ink_night">#0E1822</color>
+    <color name="category_safe_strong">#1E8E5A</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+</resources>

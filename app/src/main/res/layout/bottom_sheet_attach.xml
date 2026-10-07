@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/attach_photo"
+        style="@style/Widget.P2p.SheetRow"
+        android:drawableStart="@drawable/ic_image"
+        android:text="@string/attach_photo" />
+
+    <TextView
+        android:id="@+id/attach_video"
+        style="@style/Widget.P2p.SheetRow"
+        android:drawableStart="@drawable/ic_video_library"
+        android:text="@string/attach_video" />
+
+    <TextView
+        android:id="@+id/attach_record"
+        style="@style/Widget.P2p.SheetRow"
+        android:drawableStart="@drawable/ic_videocam"
+        android:text="@string/attach_record" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="8dp"
+        android:text="@string/attach_note"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+</LinearLayout>

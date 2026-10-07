@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ink_night">
+
+    <!-- Remote picture, full screen (aspect handled in code). -->
+    <!-- Stays visible: a TextureView only gets its surface once it is drawn. -->
+    <TextureView
+        android:id="@+id/remote_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Covers the remote picture (and its last frame) whenever video is not flowing. -->
+    <View
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/ink_night" />
+
+    <!-- Who you are talking to, shown whenever there is no remote picture. -->
+    <LinearLayout
+        android:id="@+id/identity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="80dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/big_avatar"
+            style="@style/Widget.P2p.Avatar"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:textSize="52sp"
+            tools:text="H" />
+
+        <TextView
+            android:id="@+id/big_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textColor="@color/white"
+            tools:text="Hieu" />
+
+        <TextView
+            android:id="@+id/big_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:accessibilityLiveRegion="polite"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="#CCFFFFFF"
+            tools:text="Đang đổ chuông…" />
+    </LinearLayout>
+
+    <!-- Top bar over the video: name, timer, link quality. -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_call_top"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="28dp">
+
+        <TextView
+            android:id="@+id/top_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="@color/white"
+            tools:text="Hieu" />
+
+        <TextView
+            android:id="@+id/top_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFeatureSettings="tnum"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="#CCFFFFFF"
+            tools:text="02:14, qua Bình, 2 bước" />
+
+        <TextView
+            android:id="@+id/quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_scrim_pill"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            tools:text="Mạng yếu"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <!-- Your own camera, small, top-right. -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/local_card"
+        android:layout_width="104dp"
+        android:layout_height="138dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:strokeColor="#55FFFFFF"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
+
+        <TextureView
+            android:id="@+id/local_video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- In-call controls. -->
+    <LinearLayout
+        android:id="@+id/controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_call_bottom"
+        android:orientation="vertical"
+        android:paddingTop="48dp"
+        android:paddingBottom="28dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout style="@style/Widget.P2p.CallCell">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_mute"
+                    style="@style/Widget.P2p.CallControl"
+                    android:contentDescription="@string/call_mute"
+                    app:icon="@drawable/ic_mic" />
+                <TextView android:id="@+id/lbl_mute" style="@style/Widget.P2p.CallLabel" android:text="@string/call_mute" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/Widget.P2p.CallCell">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_camera"
+                    style="@style/Widget.P2p.CallControl"
+                    android:contentDescription="@string/call_camera"
+                    app:icon="@drawable/ic_videocam" />
+                <TextView android:id="@+id/lbl_camera" style="@style/Widget.P2p.CallLabel" android:text="@string/call_camera" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cell_flip"
+                style="@style/Widget.P2p.CallCell">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_flip"
+                    style="@style/Widget.P2p.CallControl"
+                    android:contentDescription="@string/call_flip"
+                    app:icon="@drawable/ic_flip_camera" />
+                <TextView style="@style/Widget.P2p.CallLabel" android:text="@string/call_flip" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/Widget.P2p.CallCell">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_speaker"
+                    style="@style/Widget.P2p.CallControl"
+                    android:contentDescription="@string/call_speaker"
+                    app:icon="@drawable/ic_volume_up" />
+                <TextView android:id="@+id/lbl_speaker" style="@style/Widget.P2p.CallLabel" android:text="@string/call_speaker" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_end"
+            style="@style/Widget.P2p.CallControl"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/call_end"
+            app:backgroundTint="@color/sos_button"
+            app:icon="@drawable/ic_call_end"
+            app:iconSize="32dp" />
+    </LinearLayout>
+
+    <!-- Incoming call: decline / answer (and voice-only for video calls). -->
+    <LinearLayout
+        android:id="@+id/incoming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="48dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <LinearLayout style="@style/Widget.P2p.CallCell">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_decline"
+                style="@style/Widget.P2p.CallControl"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:contentDescription="@string/call_decline"
+                app:backgroundTint="@color/sos_button"
+                app:icon="@drawable/ic_call_end"
+                app:iconSize="34dp" />
+            <TextView style="@style/Widget.P2p.CallLabel" android:text="@string/call_decline" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cell_voice_only"
+            style="@style/Widget.P2p.CallCell">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_voice_only"
+                style="@style/Widget.P2p.CallControl"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:contentDescription="@string/call_voice_only"
+                app:icon="@drawable/ic_call"
+                app:iconSize="32dp" />
+            <TextView style="@style/Widget.P2p.CallLabel" android:text="@string/call_voice_only" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Widget.P2p.CallCell">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_answer"
+                style="@style/Widget.P2p.CallControl"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:contentDescription="@string/call_answer"
+                app:backgroundTint="@color/category_safe_strong"
+                app:icon="@drawable/ic_call"
+                app:iconSize="34dp" />
+            <TextView style="@style/Widget.P2p.CallLabel" android:text="@string/call_answer" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

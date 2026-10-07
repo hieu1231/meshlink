@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Camera writes freshly recorded clips here before they are compressed. -->
+    <cache-path name="captures" path="captures/" />
+</paths>

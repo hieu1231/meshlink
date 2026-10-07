@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp">
+
+    <LinearLayout
+        android:id="@+id/bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <FrameLayout
+            android:layout_width="@dimen/photo_width"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:background="@color/surface_high"
+                android:contentDescription="@string/image_cd"
+                android:maxHeight="320dp"
+                android:minHeight="150dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.P2p.Photo" />
+
+            <ImageView
+                android:id="@+id/icon_play"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="#99000000"
+                android:importantForAccessibility="no"
+                android:padding="14dp"
+                android:src="@drawable/ic_play"
+                android:visibility="gone"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/text_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_scrim_pill"
+                android:drawablePadding="4dp"
+                android:fontFeatureSettings="tnum"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                tools:text="0:28"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/progress_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_scrim_pill"
+                android:layout_margin="8dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:visibility="gone">
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:indicatorColor="@color/signal"
+                    app:trackColor="#55FFFFFF"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="5dp" />
+
+                <TextView
+                    android:id="@+id/text_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/white"
+                    tools:text="Đang nhận 4/10" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/text_caption"
+            android:layout_width="@dimen/photo_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="8dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            tools:text="Cầu sập ở km 12" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="2dp">
+        <LinearLayout
+            android:id="@+id/meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                tools:text="14:02" />
+
+            <ImageView
+                android:id="@+id/icon_status"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="4dp"
+                android:importantForAccessibility="no"
+                tools:src="@drawable/ic_done_all" />
+        </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

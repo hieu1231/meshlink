@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Debug builds only: renders the radar with simulated phones for visual review. -->
+        <activity
+            android:name=".ui.RadarPreviewActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.DemoChatActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.CallPreviewActivity"
+            android:exported="true" />
+    </application>
+</manifest>

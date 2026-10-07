@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.P2p" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
+        <item name="colorSecondary">@color/primary</item>
+        <item name="colorOnSecondary">@color/on_primary</item>
+        <item name="colorSecondaryContainer">@color/signal</item>
+        <item name="colorOnSecondaryContainer">@color/on_signal</item>
+        <item name="colorTertiary">@color/category_sos</item>
+        <item name="colorError">@color/category_sos</item>
+
+        <item name="android:colorBackground">@color/surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorOnSurfaceVariant">@color/ink_soft</item>
+        <item name="colorSurfaceVariant">@color/surface_highest</item>
+        <item name="colorSurfaceContainerLowest">@color/surface_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/surface_low</item>
+        <item name="colorSurfaceContainer">@color/surface_mid</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_highest</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_soft</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.P2p.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.P2p.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.P2p.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.P2p.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.P2p.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.P2p.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.P2p.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.P2p.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.P2p.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.P2p.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.P2p.LabelSmall</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.P2p.Dialog</item>
+        <item name="bottomNavigationStyle">@style/Widget.P2p.BottomNav</item>
+        <item name="toolbarStyle">@style/Widget.P2p.Toolbar</item>
+    </style>
+
+    <style name="Theme.P2p" parent="Base.Theme.P2p" />
+
+    <style name="ThemeOverlay.P2p.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">@style/P2p.DialogTitle</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_lowest</item>
+    </style>
+
+    <style name="P2p.DialogTitle" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textAppearance">@style/TextAppearance.P2p.HeadlineSmall</item>
+    </style>
+
+    <style name="Widget.P2p.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.P2p.TitleLarge</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.P2p.BodySmall</item>
+    </style>
+
+    <style name="Widget.P2p.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">@color/surface_lowest</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.P2p.LabelMedium</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.P2p.LabelMedium</item>
+    </style>
+
+    <!-- Type scale: one family, weight carries hierarchy. -->
+    <style name="TextAppearance.P2p.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    <style name="TextAppearance.P2p.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:letterSpacing">-0.005</item>
+    </style>
+    <style name="TextAppearance.P2p.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TextAppearance.P2p.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="fontFamily">@font/be_vietnam_pro_regular</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="fontFamily">@font/be_vietnam_pro_semibold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">@font/be_vietnam_pro_medium</item>
+        <item name="fontFamily">@font/be_vietnam_pro_medium</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.P2p.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/be_vietnam_pro_medium</item>
+        <item name="fontFamily">@font/be_vietnam_pro_medium</item>
+        <item name="android:textSize">11.5sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <!-- Node ids: same family with tabular figures so codes line up. -->
+    <style name="TextAppearance.P2p.Code" parent="TextAppearance.P2p.BodySmall">
+        <item name="android:fontFeatureSettings">"tnum"</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+    <style name="TextAppearance.P2p.Mono" parent="TextAppearance.P2p.Code" />
+
+    <!-- High-vis primary action (signal yellow). -->
+    <style name="Widget.P2p.Button.Signal" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/signal</item>
+        <item name="android:textColor">@color/on_signal</item>
+        <item name="iconTint">@color/on_signal</item>
+        <item name="android:minHeight">60dp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.TitleMedium</item>
+    </style>
+    <style name="Widget.P2p.Button.Sos" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/sos_button</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.TitleMedium</item>
+    </style>
+    <style name="Widget.P2p.Button.Safe" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/category_safe</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">@color/category_safe</item>
+        <item name="iconTint">@color/category_safe</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.TitleMedium</item>
+    </style>
+    <style name="Widget.P2p.Button.Quiet" parent="Widget.Material3.Button.TonalButton">
+        <item name="backgroundTint">@color/surface_high</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="iconTint">@color/ink</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.TitleMedium</item>
+    </style>
+
+    <style name="Widget.P2p.Badge" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_badge</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.LabelMedium</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="Widget.P2p.SheetRow" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:drawablePadding">20dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="drawableTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.P2p.Avatar" parent="">
+        <item name="android:background">@drawable/bg_avatar</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">@style/TextAppearance.P2p.TitleMedium</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+</resources>
