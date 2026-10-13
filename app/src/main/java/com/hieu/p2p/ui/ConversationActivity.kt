@@ -35,13 +35,13 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.hieu.p2p.P2pApp
@@ -178,29 +178,36 @@ class ConversationActivity : AppCompatActivity() {
         peer = intent.getStringExtra(EXTRA_PEER)?.let(NodeId::fromHex)
         val peer = peer
 
+        // Messages scroll under the floating header; the composer rides on the keyboard.
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            v.setPadding(bars.left, bars.top, bars.right, maxOf(bars.bottom, ime.bottom))
+            v.setPadding(bars.left, 0, bars.right, maxOf(bars.bottom, ime.bottom))
+            binding.headerBar.updatePadding(top = bars.top + dp(6))
             WindowInsetsCompat.CONSUMED
         }
+        binding.headerBar.addOnLayoutChangeListener { header, _, _, _, _, _, _, _, _ ->
+            val top = header.height - dp(6)
+            if (binding.listMessages.paddingTop != top) binding.listMessages.post { binding.listMessages.updatePadding(top = top) }
+        }
 
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.buttonBack.setOnClickListener { finish() }
         if (peer == null) {
             binding.headerTitle.text = getString(R.string.public_channel)
-            binding.headerAvatar.text = ""
-            binding.headerAvatar.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary))
+            binding.headerAvatarBox.isVisible = true
+            binding.headerAvatar.bindChannelAvatar()
             binding.headerIcon.isVisible = true
         } else {
             binding.header.setOnClickListener { PeerSheet.newInstance(peer).show(supportFragmentManager, "peer") }
-            binding.buttonVoiceCall.isVisible = true
-            binding.buttonVideoCall.isVisible = true
+            binding.callGroup.isVisible = true
+            binding.headerSubtitle.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_lock_small, 0, 0, 0)
             binding.buttonVoiceCall.setOnClickListener { placeCall(peer, video = false) }
             binding.buttonVideoCall.setOnClickListener { placeCall(peer, video = true) }
         }
 
         adapter = MessageAdapter(
             scope = lifecycleScope,
+            showAvatars = peer == null,
             fileFor = mesh.images::file,
             player = voicePlayer,
             onOpen = ::openMedia,
@@ -307,7 +314,6 @@ class ConversationActivity : AppCompatActivity() {
     private fun setupComposer(peer: NodeId?) {
         // Media only in direct chats: flooding a clip to everyone would choke the mesh.
         binding.buttonAttach.isVisible = peer != null
-        if (peer == null) binding.inputMessage.setPaddingRelative(dp(18), 0, dp(16), 0)
         binding.buttonAttach.setOnClickListener { showAttachSheet() }
 
         fun syncAction() {
@@ -527,6 +533,8 @@ class ConversationActivity : AppCompatActivity() {
 
     private class MessageAdapter(
         private val scope: CoroutineScope,
+        /** Public channel: show who wrote each run of messages. */
+        private val showAvatars: Boolean,
         private val fileFor: (Long) -> File,
         private val player: VoicePlayer,
         private val onOpen: (UiMessage) -> Unit,
@@ -599,8 +607,8 @@ class ConversationActivity : AppCompatActivity() {
             val d = ctx.resources.displayMetrics.density
             val out = msg.m.outgoing
             row.gravity = if (out) android.view.Gravity.END else android.view.Gravity.START
-            val side = (52 * d).toInt()
-            val edge = (12 * d).toInt()
+            val side = (56 * d).toInt()
+            val edge = ((if (showAvatars && !out) 8 else 12) * d).toInt()
             row.setPaddingRelative(if (out) side else edge, ((if (msg.first) 8 else 2) * d).toInt(), if (out) edge else side, 0)
             bubble.setBackgroundResource(
                 when {
@@ -610,15 +618,8 @@ class ConversationActivity : AppCompatActivity() {
                     else -> R.drawable.bg_bubble_in_mid
                 }
             )
-            return if (out) {
-                val c = ContextCompat.getColor(ctx, R.color.on_bubble_out)
-                Palette(c, (c and 0x00FFFFFF) or (0xB3 shl 24))
-            } else {
-                Palette(
-                    MaterialColors.getColor(row, com.google.android.material.R.attr.colorOnSurface),
-                    MaterialColors.getColor(row, com.google.android.material.R.attr.colorOnSurfaceVariant),
-                )
-            }
+            val text = ContextCompat.getColor(ctx, if (out) R.color.on_bubble_out else R.color.on_bubble_in)
+            return Palette(text, if (out) (text and 0x00FFFFFF) or (0xBF shl 24) else ContextCompat.getColor(ctx, R.color.label_secondary))
         }
 
         private fun bindMeta(time: TextView, icon: ImageView, m: UiMessage, p: Palette) {
@@ -635,10 +636,8 @@ class ConversationActivity : AppCompatActivity() {
             if (res != 0) {
                 icon.setImageResource(res)
                 icon.contentDescription = ctx.getString(cd)
-                // Delivered ticks in signal yellow: the one state worth noticing at a glance.
-                icon.imageTintList = ColorStateList.valueOf(
-                    if (m.status == DmStatus.DELIVERED) ContextCompat.getColor(ctx, R.color.signal) else p.meta
-                )
+                // Delivered ticks at full strength: the one state worth noticing at a glance.
+                icon.imageTintList = ColorStateList.valueOf(if (m.status == DmStatus.DELIVERED) p.text else p.meta)
             }
         }
 
@@ -653,8 +652,16 @@ class ConversationActivity : AppCompatActivity() {
             b.textSender.isVisible = showSender
             if (showSender) {
                 b.textSender.text = m.sender
-                m.senderId?.let { b.textSender.setTextColor(MeshRadarView.avatarColor(it)) }
+                m.senderId?.let { b.textSender.setTextColor(avatarTextColor(b.root.context, it)) }
             }
+            // Avatar at the foot of each run; earlier bubbles keep its space so the run lines up.
+            val withAvatar = showAvatars && !m.outgoing
+            b.avatar.visibility = when {
+                !withAvatar -> View.GONE
+                msg.last -> View.VISIBLE
+                else -> View.INVISIBLE
+            }
+            if (withAvatar && msg.last) m.senderId?.let { b.avatar.bindAvatar(m.sender.orEmpty(), it) }
             bindMeta(b.textTime, b.iconStatus, m, p)
         }
 
@@ -724,16 +731,18 @@ class ConversationActivity : AppCompatActivity() {
             bindMeta(b.textTime, b.iconStatus, m, p)
             b.textDuration.setTextColor(p.meta)
             b.waveform.setLevels(m.preview)
+            // Outgoing: white disc on the blue bubble. Incoming: blue disc on the grey bubble.
+            val accent = ContextCompat.getColor(ctx, R.color.accent)
             if (m.outgoing) {
-                b.buttonPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.signal))
-                b.buttonPlay.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.on_signal))
-                b.waveform.playedColor = ContextCompat.getColor(ctx, R.color.signal)
+                b.buttonPlay.backgroundTintList = ColorStateList.valueOf(p.text)
+                b.buttonPlay.imageTintList = ColorStateList.valueOf(accent)
+                b.waveform.playedColor = p.text
                 b.waveform.idleColor = (p.text and 0x00FFFFFF) or (0x66 shl 24)
             } else {
-                b.buttonPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.primary))
-                b.buttonPlay.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.on_primary))
-                b.waveform.playedColor = ContextCompat.getColor(ctx, R.color.primary)
-                b.waveform.idleColor = ContextCompat.getColor(ctx, R.color.outline_soft)
+                b.buttonPlay.backgroundTintList = ColorStateList.valueOf(accent)
+                b.buttonPlay.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.on_accent))
+                b.waveform.playedColor = accent
+                b.waveform.idleColor = ContextCompat.getColor(ctx, R.color.label_tertiary)
             }
             b.buttonPlay.isEnabled = m.ready
             b.buttonPlay.alpha = if (m.ready) 1f else 0.45f

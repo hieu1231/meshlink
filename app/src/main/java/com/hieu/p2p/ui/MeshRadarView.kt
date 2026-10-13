@@ -15,7 +15,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.google.android.material.color.MaterialColors
 import com.hieu.p2p.R
 import com.hieu.p2p.mesh.core.GeoPoint
 import com.hieu.p2p.mesh.core.NodeId
@@ -61,14 +60,15 @@ class MeshRadarView @JvmOverloads constructor(
     private var geoMode = false
 
     private val dp = resources.displayMetrics.density
-    private val ink = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
-    private val inkSoft = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant)
-    private val ringColor = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutlineVariant)
-    private val surface = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface)
-    private val signal = ContextCompat.getColor(context, R.color.signal)
-    private val onSignal = ContextCompat.getColor(context, R.color.on_signal)
-    private val offColor = ContextCompat.getColor(context, R.color.status_offline)
-    private val sosRed = ContextCompat.getColor(context, R.color.sos_button)
+    private val ink = ContextCompat.getColor(context, R.color.label)
+    private val inkSoft = ContextCompat.getColor(context, R.color.label_secondary)
+    private val ringColor = ContextCompat.getColor(context, R.color.separator)
+    /** The radar sits on a card; labels get a backing of the same colour. */
+    private val surface = ContextCompat.getColor(context, R.color.card)
+    private val accent = ContextCompat.getColor(context, R.color.accent)
+    private val onAccent = ContextCompat.getColor(context, R.color.on_accent)
+    private val offColor = ContextCompat.getColor(context, R.color.gray)
+    private val sosRed = ContextCompat.getColor(context, R.color.red)
     private val bold = ResourcesCompat.getFont(context, R.font.be_vietnam_pro_bold) ?: Typeface.DEFAULT_BOLD
     private val semibold = ResourcesCompat.getFont(context, R.font.be_vietnam_pro_semibold) ?: Typeface.DEFAULT_BOLD
     private val medium = ResourcesCompat.getFont(context, R.font.be_vietnam_pro_medium) ?: Typeface.DEFAULT
@@ -290,7 +290,7 @@ class MeshRadarView @JvmOverloads constructor(
         }
 
         if (sweeper.isStarted) {
-            halo.color = signal
+            halo.color = accent
             halo.strokeWidth = 3f * dp
             halo.alpha = (200 * (1f - sweep)).toInt()
             canvas.drawCircle(cx, cy, inner * sweep, halo)
@@ -335,7 +335,7 @@ class MeshRadarView @JvmOverloads constructor(
             cone.moveTo(cx, cy)
             cone.arcTo(oval, -90f - 28f, 56f)
             cone.close()
-            fill.color = signal
+            fill.color = accent
             fill.alpha = 70
             canvas.drawPath(cone, fill)
             fill.alpha = 255
@@ -360,10 +360,13 @@ class MeshRadarView @JvmOverloads constructor(
             val name = nameOf(p.route)
             val r = if (p.placed || !geoMode) nodeR else nodeR * 0.8f
             if (p.route.dest == selected) {
-                stroke.color = signal
+                stroke.color = accent
                 stroke.strokeWidth = 4f * dp
                 canvas.drawCircle(p.x, p.y, r + 4f * dp, stroke)
             }
+            // A light rim lifts each phone off the rings and links, like a map pin.
+            fill.color = surface
+            canvas.drawCircle(p.x, p.y, r + 2f * dp, fill)
             fill.color = avatarColor(p.route.dest)
             fill.alpha = if (p.placed || !geoMode) 255 else 170
             canvas.drawCircle(p.x, p.y, r, fill)
@@ -378,16 +381,18 @@ class MeshRadarView @JvmOverloads constructor(
             second?.let { drawLabel(canvas, it, p.x, nameY + 13f * dp, distPaint) }
         }
 
-        // You.
+        // You: the blue location dot with a white rim and a soft halo.
         if (running) {
-            halo.color = signal
-            halo.alpha = 90
-            halo.strokeWidth = 8f * dp
-            canvas.drawCircle(cx, cy, meR + 5f * dp, halo)
+            fill.color = accent
+            fill.alpha = 40
+            canvas.drawCircle(cx, cy, meR + 12f * dp, fill)
+            fill.alpha = 255
         }
-        fill.color = if (running) signal else offColor
+        fill.color = surface
+        canvas.drawCircle(cx, cy, meR + 3.5f * dp, fill)
+        fill.color = if (running) accent else offColor
         canvas.drawCircle(cx, cy, meR, fill)
-        initialPaint.color = if (running) onSignal else 0xFFFFFFFF.toInt()
+        initialPaint.color = if (running) onAccent else 0xFFFFFFFF.toInt()
         initialPaint.textSize = 19f * dp
         drawCentered(canvas, myInitial, cx, cy, initialPaint)
     }

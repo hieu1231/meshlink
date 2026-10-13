@@ -4,195 +4,319 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:background="@color/bg_grouped"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:paddingBottom="@dimen/tab_bar_clearance">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="24dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_headline"
+        <!-- Large title with round actions: connection log, and you (rename). -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="4dp"
-            android:accessibilityHeading="true"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            tools:text="Đang nối với 3 máy" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/section_text_inset"
+            android:paddingTop="10dp"
+            android:paddingEnd="@dimen/screen_margin">
 
-        <TextView
-            android:id="@+id/text_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="6dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            tools:text="Tin của bạn đi tới được 5 máy. Máy này đã chuyển tiếp 12 gói cho người khác." />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:accessibilityHeading="true"
+                android:text="@string/nav_mesh"
+                android:textAppearance="?attr/textAppearanceHeadlineLarge" />
 
-        <com.hieu.p2p.ui.MeshRadarView
-            android:id="@+id/radar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_log"
+                style="@style/Widget.P2p.GlassButton.Card"
+                android:contentDescription="@string/menu_logs"
+                app:icon="@drawable/ic_activity" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_toggle"
-            style="@style/Widget.P2p.Button.Signal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="4dp"
-            android:text="@string/mesh_on"
-            app:icon="@drawable/ic_power"
-            app:iconGravity="textStart"
-            app:iconPadding="10dp" />
+            <TextView
+                android:id="@+id/button_profile"
+                style="@style/Widget.P2p.Avatar"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="10dp"
+                android:clickable="true"
+                android:contentDescription="@string/menu_rename"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:importantForAccessibility="yes"
+                tools:text="L" />
+        </LinearLayout>
 
+        <!-- Status card: state, headline, the live radar and the on/off switch. -->
+        <com.hieu.p2p.ui.CardLayout
+            style="@style/Widget.P2p.Card"
+            android:layout_marginTop="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="18dp">
+
+                <TextView
+                    android:id="@+id/text_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    app:drawableStartCompat="@drawable/bg_status_dot"
+                    tools:text="Đang hoạt động"
+                    tools:textColor="@color/green" />
+
+                <TextView
+                    android:id="@+id/text_headline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:accessibilityHeading="true"
+                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                    tools:text="Đang nối với 3 máy" />
+
+                <TextView
+                    android:id="@+id/text_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:lineSpacingExtra="1dp"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="@color/label_secondary"
+                    tools:text="Tin của bạn tới được 5 máy. Máy này đã chuyển tiếp 12 gói tin cho người khác." />
+            </LinearLayout>
+
+            <com.hieu.p2p.ui.MeshRadarView
+                android:id="@+id/radar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_toggle"
+                style="@style/Widget.P2p.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/mesh_on"
+                app:icon="@drawable/ic_power"
+                app:iconGravity="textStart" />
+        </com.hieu.p2p.ui.CardLayout>
+
+        <!-- Two big emergency shortcuts. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
+            android:baselineAligned="false"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
+            <com.hieu.p2p.ui.CardLayout
                 android:id="@+id/button_sos"
-                style="@style/Widget.P2p.Button.Sos"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:text="@string/action_sos"
-                app:icon="@drawable/ic_sos"
-                app:iconGravity="textStart" />
+                android:background="@drawable/bg_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/red"
+                    android:importantForAccessibility="no"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_sos"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/action_sos"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/action_sos_hint"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/label_secondary" />
+            </com.hieu.p2p.ui.CardLayout>
+
+            <com.hieu.p2p.ui.CardLayout
                 android:id="@+id/button_safe"
-                style="@style/Widget.P2p.Button.Safe"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="6dp"
                 android:layout_weight="1"
-                android:text="@string/action_safe"
-                app:icon="@drawable/ic_check_circle"
-                app:iconGravity="textStart" />
+                android:background="@drawable/bg_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/green"
+                    android:importantForAccessibility="no"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_check_circle"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/action_safe"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/action_safe_hint"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/label_secondary" />
+            </com.hieu.p2p.ui.CardLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/header_peers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="28dp"
-            android:layout_marginBottom="2dp"
-            android:accessibilityHeading="true"
-            android:text="@string/peers_header"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            style="@style/Widget.P2p.SectionTitle"
+            android:text="@string/peers_header" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_peers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_peer" />
+        <com.hieu.p2p.ui.CardLayout style="@style/Widget.P2p.Card">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_peers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_peer" />
+
+            <TextView
+                android:id="@+id/empty_peers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="12dp"
+                android:gravity="center"
+                android:padding="22dp"
+                android:text="@string/peers_empty"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/label_secondary"
+                app:drawableTint="@color/label_tertiary"
+                app:drawableTopCompat="@drawable/ic_tab_mesh" />
+        </com.hieu.p2p.ui.CardLayout>
 
         <TextView
-            android:id="@+id/empty_peers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/screen_margin"
-            android:layout_marginTop="4dp"
-            android:text="@string/peers_empty"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            style="@style/Widget.P2p.SectionTitle"
+            android:text="@string/section_device" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/screen_margin">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_place"
-                app:tint="?attr/colorOnSurfaceVariant" />
+        <com.hieu.p2p.ui.CardLayout style="@style/Widget.P2p.Card">
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:id="@+id/row_me"
+                style="@style/Widget.P2p.CardRow"
+                android:clickable="true"
+                android:focusable="true">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/avatar_me"
+                    style="@style/Widget.P2p.Avatar"
+                    android:layout_width="@dimen/avatar_small"
+                    android:layout_height="@dimen/avatar_small"
+                    tools:text="L" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_my_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        tools:text="Bạn là Lan, đội cứu hộ 2" />
+
+                    <TextView
+                        android:id="@+id/text_my_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="1dp"
+                        android:textAppearance="@style/TextAppearance.P2p.Code"
+                        android:textColor="@color/label_secondary"
+                        tools:text="Mã máy 6C7C-3649" />
+                </LinearLayout>
+
+                <ImageView style="@style/Widget.P2p.Chevron" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginStart="70dp"
+                android:background="@color/separator" />
+
+            <LinearLayout style="@style/Widget.P2p.CardRow">
+
+                <ImageView
+                    style="@style/Widget.P2p.IconTile"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:backgroundTint="@color/accent"
+                    android:src="@drawable/ic_location_fill" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:labelFor="@id/switch_share"
                     android:text="@string/share_location"
-                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-                <TextView
-                    android:id="@+id/text_share"
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_share"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    tools:text="@string/share_location_on" />
+                    android:contentDescription="@string/share_location" />
             </LinearLayout>
+        </com.hieu.p2p.ui.CardLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_share"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/share_location" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/row_me"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:minHeight="64dp"
-            android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/screen_margin">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/text_my_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceTitleSmall"
-                    tools:text="Bạn là Lan, đội cứu hộ 2" />
-
-                <TextView
-                    android:id="@+id/text_my_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.P2p.Code"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    tools:text="Mã máy 6C7C-3649" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/menu_rename"
-                android:src="@drawable/ic_edit"
-                app:tint="?attr/colorOnSurfaceVariant" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/text_share"
+            style="@style/Widget.P2p.SectionFooter"
+            tools:text="@string/share_location_on" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

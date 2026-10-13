@@ -9,14 +9,13 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.core.content.ContextCompat
-import com.google.android.material.color.MaterialColors
 import com.hieu.p2p.R
 import kotlin.math.abs
 import kotlin.math.min
 
 /**
- * One big arrow that points at the person you are looking for. Turns signal-yellow when you are
- * facing them, so the answer to "which way?" is readable at a glance, even running.
+ * One big arrow that points at the person you are looking for. The disc turns green when you are
+ * facing them (as in precision-finding UIs), so "which way?" is readable at a glance, even running.
  */
 class DirectionArrowView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
@@ -24,16 +23,16 @@ class DirectionArrowView @JvmOverloads constructor(context: Context, attrs: Attr
     var onAligned: () -> Unit = {}
 
     private val dp = resources.displayMetrics.density
-    private val ink = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface)
-    private val track = MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainerHigh)
-    private val signal = ContextCompat.getColor(context, R.color.signal)
-    private val onSignal = ContextCompat.getColor(context, R.color.on_signal)
+    private val ink = ContextCompat.getColor(context, R.color.accent)
+    private val track = ContextCompat.getColor(context, R.color.fill_strong)
+    private val alignedDisc = ContextCompat.getColor(context, R.color.green)
+    private val alignedArrow = ContextCompat.getColor(context, R.color.white)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val arrow = Path()
 
     private var shown = 0f
     private var target: Float? = null
-    private var aligned = false
+    private var isAligned = false
     private var animator: ValueAnimator? = null
 
     /** Angle relative to the top of the phone, degrees clockwise; null hides the arrow. */
@@ -60,8 +59,8 @@ class DirectionArrowView @JvmOverloads constructor(context: Context, attrs: Attr
         }
         val normalized = ((angle % 360) + 540) % 360 - 180 // -180..180, 0 = straight ahead
         val nowAligned = abs(normalized) < ALIGNED_DEG
-        if (nowAligned && !aligned) onAligned()
-        aligned = nowAligned
+        if (nowAligned && !isAligned) onAligned()
+        isAligned = nowAligned
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -69,7 +68,7 @@ class DirectionArrowView @JvmOverloads constructor(context: Context, attrs: Attr
         val cy = height / 2f
         val r = min(width, height) / 2f - 4 * dp
         paint.style = Paint.Style.FILL
-        paint.color = if (target != null && aligned) signal else track
+        paint.color = if (target != null && isAligned) alignedDisc else track
         canvas.drawCircle(cx, cy, r, paint)
         if (target == null) return
 
@@ -83,7 +82,7 @@ class DirectionArrowView @JvmOverloads constructor(context: Context, attrs: Attr
         arrow.lineTo(cx, cy + h * 0.25f)
         arrow.lineTo(cx - w, cy + h * 0.55f)
         arrow.close()
-        paint.color = if (aligned) onSignal else ink
+        paint.color = if (isAligned) alignedArrow else ink
         canvas.drawPath(arrow, paint)
         canvas.restore()
     }

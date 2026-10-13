@@ -1,29 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ink">#E4EAEE</color>
-    <color name="ink_soft">#A3B1BB</color>
-    <color name="signal_soft">#4A3A0A</color>
+    <color name="bg_grouped">#000000</color>
+    <color name="bg_plain">#000000</color>
+    <color name="bg_plain_fade">#C7000000</color>
+    <color name="bg_plain_clear">#00000000</color>
+    <color name="card">#1C1C1E</color>
+    <color name="card_elevated">#2C2C2E</color>
+    <color name="sheet_bg">#1C1C1E</color>
+    <color name="sheet_card">#2C2C2E</color>
+    <color name="fill">#2C2C2E</color>
+    <color name="fill_strong">#3A3A3C</color>
+    <color name="separator">#38383A</color>
 
-    <color name="surface">#0E1822</color>
-    <color name="surface_lowest">#0A131B</color>
-    <color name="surface_low">#15212C</color>
-    <color name="surface_mid">#1A2733</color>
-    <color name="surface_high">#1F2D3A</color>
-    <color name="surface_highest">#25343F</color>
-    <color name="outline">#6E7F8B</color>
-    <color name="outline_soft">#2E3F4C</color>
+    <color name="label">#FFFFFF</color>
+    <color name="label_secondary">#98989F</color>
+    <color name="label_tertiary">#5A5A5F</color>
 
-    <color name="primary">#B9CCDC</color>
-    <color name="on_primary">#10202D</color>
-    <color name="primary_container">#2A3D4D</color>
-    <color name="on_primary_container">#DCE6EE</color>
+    <color name="accent">#0A84FF</color>
+    <color name="accent_soft">#0F2A47</color>
 
-    <color name="bubble_out">#2A3D4D</color>
-    <color name="on_bubble_out">#E4EAEE</color>
+    <color name="red">#FF453A</color>
+    <color name="red_soft">#3B1715</color>
+    <color name="green">#30D158</color>
+    <color name="green_soft">#12301B</color>
+    <color name="orange">#FF9F0A</color>
+    <color name="orange_soft">#3A2608</color>
+    <color name="indigo">#7D7AFF</color>
+    <color name="indigo_soft">#24234A</color>
 
-    <color name="category_sos">#FF6B7A</color>
-    <color name="category_safe">#4CC38A</color>
-    <color name="category_resource">#7AA7FF</color>
-    <color name="category_info">#B7A3D9</color>
-    <color name="sos_wash">#3A1A20</color>
+    <color name="bubble_out">#0A84FF</color>
+    <color name="bubble_in">#262628</color>
+    <color name="on_bubble_in">#FFFFFF</color>
+
+    <color name="glass">#E62A2A2D</color>
+    <color name="glass_stroke">#1FFFFFFF</color>
+    <color name="tab_selected">#48484C</color>
 </resources>

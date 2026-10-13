@@ -35,6 +35,8 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
         }
         binding.listConversations.layoutManager = LinearLayoutManager(requireContext())
         binding.listConversations.adapter = adapter
+        binding.listConversations.addItemDecoration(insetDivider(requireContext(), startDp = 82))
+        viewLifecycleOwner.collectWhileStarted(mesh.node.status) { binding.textStatus.bindStatusLine(it) }
 
         val runtime = mesh
         val node = runtime.node
@@ -93,9 +95,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
             b.textPreview.text = row.preview
             b.textTime.text = row.time?.let(Formats::time).orEmpty()
             if (row.peer == null) {
-                b.avatar.text = ""
-                b.avatar.backgroundTintList =
-                    android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(b.root.context, R.color.primary))
+                b.avatar.bindChannelAvatar()
                 b.avatarIcon.visibility = View.VISIBLE
             } else {
                 b.avatar.bindAvatar(row.title, row.peer)

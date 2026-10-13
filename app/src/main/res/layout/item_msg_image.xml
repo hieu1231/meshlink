@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="4dp">
+        android:padding="3dp">
 
         <FrameLayout
             android:layout_width="@dimen/photo_width"
@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:background="@color/surface_high"
+                android:background="@color/fill_strong"
                 android:contentDescription="@string/image_cd"
                 android:maxHeight="320dp"
                 android:minHeight="150dp"
@@ -33,11 +33,11 @@
 
             <ImageView
                 android:id="@+id/icon_play"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_circle"
-                android:backgroundTint="#99000000"
+                android:backgroundTint="#8C000000"
                 android:importantForAccessibility="no"
                 android:padding="14dp"
                 android:src="@drawable/ic_play"
@@ -51,7 +51,6 @@
                 android:layout_gravity="bottom|start"
                 android:layout_margin="8dp"
                 android:background="@drawable/bg_scrim_pill"
-                android:drawablePadding="4dp"
                 android:fontFeatureSettings="tnum"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="8dp"
@@ -67,8 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="@drawable/bg_scrim_pill"
                 android:layout_margin="8dp"
+                android:background="@drawable/bg_scrim_pill"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp"
@@ -79,10 +78,10 @@
                     android:id="@+id/progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:indicatorColor="@color/signal"
-                    app:trackColor="#55FFFFFF"
-                    app:trackCornerRadius="4dp"
-                    app:trackThickness="5dp" />
+                    app:indicatorColor="@color/white"
+                    app:trackColor="#4DFFFFFF"
+                    app:trackCornerRadius="3dp"
+                    app:trackThickness="4dp" />
 
                 <TextView
                     android:id="@+id/text_progress"
@@ -99,16 +98,11 @@
             android:id="@+id/text_caption"
             android:layout_width="@dimen/photo_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:paddingHorizontal="8dp"
+            android:layout_marginTop="5dp"
+            android:paddingHorizontal="9dp"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             tools:text="Cầu sập ở km 12" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:paddingBottom="2dp">
         <LinearLayout
             android:id="@+id/meta"
             android:layout_width="wrap_content"
@@ -116,7 +110,9 @@
             android:layout_gravity="end"
             android:layout_marginTop="2dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingHorizontal="9dp"
+            android:paddingBottom="3dp">
 
             <TextView
                 android:id="@+id/text_time"
@@ -127,12 +123,11 @@
 
             <ImageView
                 android:id="@+id/icon_status"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_marginStart="4dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="3dp"
                 android:importantForAccessibility="no"
                 tools:src="@drawable/ic_done_all" />
         </LinearLayout>
-        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

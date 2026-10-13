@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="24dp"
-    android:paddingTop="8dp">
+    android:paddingTop="12dp">
 
     <com.google.android.material.textfield.TextInputLayout
-        style="?attr/textInputOutlinedStyle"
+        style="@style/Widget.P2p.TextField.OnCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/name_hint"

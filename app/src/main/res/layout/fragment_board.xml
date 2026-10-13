@@ -1,103 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_grouped"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/section_text_inset"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/screen_margin">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:layout_weight="1"
+            android:accessibilityHeading="true"
+            android:text="@string/nav_board"
+            android:textAppearance="?attr/textAppearanceHeadlineLarge" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chips_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/screen_margin"
-                android:paddingBottom="4dp"
-                app:selectionRequired="true"
-                app:singleLine="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_all"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/board_filter_all" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_sos"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category_sos" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_safe"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category_safe" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_resource"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category_resource" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_info"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category_info" />
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/list_board"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingBottom="96dp"
-                tools:listitem="@layout/item_board" />
-
-            <TextView
-                android:id="@+id/empty_board"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="32dp"
-                android:text="@string/board_empty"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-        </FrameLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fab_post"
+            style="@style/Widget.P2p.GlassButton.Accent"
+            android:contentDescription="@string/board_post"
+            app:icon="@drawable/ic_plus" />
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_post"
+    <TextView
+        android:id="@+id/text_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/screen_margin"
-        android:text="@string/board_post"
-        android:textColor="@color/on_signal"
-        app:backgroundTint="@color/signal"
-        app:icon="@drawable/ic_add"
-        app:iconTint="@color/on_signal" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        android:layout_marginHorizontal="@dimen/section_text_inset"
+        android:drawablePadding="6dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="@color/label_secondary"
+        app:drawableStartCompat="@drawable/bg_status_dot"
+        tools:text="Nối trực tiếp 2 máy, thấy 4 máy" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/screen_margin"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chips_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:chipSpacingHorizontal="8dp"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all"
+                style="@style/Widget.P2p.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/board_filter_all" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_sos"
+                style="@style/Widget.P2p.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_sos" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_safe"
+                style="@style/Widget.P2p.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_safe" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_resource"
+                style="@style/Widget.P2p.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_resource" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_info"
+                style="@style/Widget.P2p.Chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/category_info" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_board"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="@dimen/tab_bar_clearance"
+            tools:listitem="@layout/item_board" />
+
+        <!-- Empty state: big icon, one line of what this place is for. -->
+        <LinearLayout
+            android:id="@+id/empty_board"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="60dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingHorizontal="36dp">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="@color/fill_strong"
+                android:importantForAccessibility="no"
+                android:padding="17dp"
+                android:src="@drawable/ic_tab_board"
+                app:tint="@color/label_secondary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/board_empty_title"
+                android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="@string/board_empty"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/label_secondary" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

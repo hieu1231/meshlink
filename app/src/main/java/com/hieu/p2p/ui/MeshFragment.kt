@@ -1,10 +1,12 @@
 package com.hieu.p2p.ui
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +45,7 @@ class MeshFragment : Fragment(R.layout.fragment_mesh) {
         binding.listPeers.layoutManager = LinearLayoutManager(requireContext())
         binding.listPeers.adapter = adapter
         binding.listPeers.itemAnimator = null
+        binding.listPeers.addItemDecoration(insetDivider(requireContext(), startDp = 70))
         binding.radar.onNodeClick = openPeer
 
         // The compass only runs while this screen is visible.
@@ -57,9 +60,12 @@ class MeshFragment : Fragment(R.layout.fragment_mesh) {
             }
         })
 
+        val main = requireActivity() as MainActivity
         binding.textMyId.text = getString(R.string.my_id, mesh.myId.short)
-        binding.rowMe.setOnClickListener { (requireActivity() as MainActivity).promptName(firstRun = false) }
-        binding.buttonToggle.setOnClickListener { (requireActivity() as MainActivity).toggleMesh() }
+        binding.rowMe.setOnClickListener { main.promptName(firstRun = false) }
+        binding.buttonProfile.setOnClickListener { main.promptName(firstRun = false) }
+        binding.buttonLog.setOnClickListener { main.showLog() }
+        binding.buttonToggle.setOnClickListener { main.toggleMesh() }
         binding.switchShare.setOnCheckedChangeListener { _, on -> if (on != mesh.sharingLocation.value) mesh.setSharingLocation(on) }
         binding.buttonSos.setOnClickListener {
             BoardEditor.show(requireContext(), mesh, category = BoardCategory.SOS) {
@@ -90,12 +96,24 @@ class MeshFragment : Fragment(R.layout.fragment_mesh) {
         val s = snap.status
         val shownName = snap.name.ifBlank { getString(R.string.default_name, mesh.myId.short) }
         binding.textMyName.text = getString(R.string.me_line, shownName)
+        binding.avatarMe.bindAvatar(shownName, mesh.myId)
+        binding.buttonProfile.bindAvatar(shownName, mesh.myId)
 
+        val searching = s.links == 0 || s.links == s.outdatedNeighbors
         binding.textHeadline.text = when {
             !s.running -> getString(R.string.headline_off)
-            s.links == 0 || s.links == s.outdatedNeighbors -> getString(R.string.headline_searching)
+            searching -> getString(R.string.headline_searching)
             else -> resources.getQuantityString(R.plurals.headline_on, s.links, s.links)
         }
+        val (state, stateColor) = when {
+            !s.running -> R.string.state_off to R.color.gray
+            searching -> R.string.state_searching to R.color.orange
+            else -> R.string.state_on to R.color.green
+        }
+        binding.textState.setText(state)
+        val stateTint = ContextCompat.getColor(requireContext(), stateColor)
+        binding.textState.setTextColor(stateTint)
+        TextViewCompat.setCompoundDrawableTintList(binding.textState, ColorStateList.valueOf(stateTint))
         binding.textStatus.text = when {
             !s.running -> getString(R.string.status_off)
             s.outdatedNeighbors > 0 -> getString(R.string.status_outdated, s.outdatedNeighbors)
@@ -115,12 +133,12 @@ class MeshFragment : Fragment(R.layout.fragment_mesh) {
             }
         )
 
-        // On: the yellow switch steps back to a quiet button so SOS / Safe lead.
+        // Off: the one filled button on the page. On: it steps back to grey so SOS / Safe lead.
         binding.buttonToggle.setText(if (s.running) R.string.mesh_off else R.string.mesh_on)
-        val bg = if (s.running) R.color.surface_high else R.color.signal
-        val fg = if (s.running) R.color.ink else R.color.on_signal
+        val bg = if (s.running) R.color.fill else R.color.button_filled_bg
+        val fg = if (s.running) R.color.label else R.color.button_filled_fg
         binding.buttonToggle.backgroundTintList = ContextCompat.getColorStateList(requireContext(), bg)
-        binding.buttonToggle.setTextColor(ContextCompat.getColor(requireContext(), fg))
+        binding.buttonToggle.setTextColor(ContextCompat.getColorStateList(requireContext(), fg))
         binding.buttonToggle.iconTint = ContextCompat.getColorStateList(requireContext(), fg)
 
         // Nearest first when distances are known, otherwise by hops.
@@ -131,11 +149,12 @@ class MeshFragment : Fragment(R.layout.fragment_mesh) {
         adapter.updateFrame(snap.me, heading)
         adapter.submitList(sorted)
         binding.emptyPeers.visibility = if (s.routes.isEmpty()) View.VISIBLE else View.GONE
+        binding.listPeers.visibility = if (s.routes.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun snack(res: Int) {
         Snackbar.make(binding.root, res, Snackbar.LENGTH_LONG)
-            .setAnchorView(requireActivity().findViewById(R.id.bottom_nav))
+            .setAnchorView((requireActivity() as MainActivity).snackAnchor)
             .show()
     }
 
@@ -187,10 +206,7 @@ private class PeerAdapter(
         b.avatar.bindAvatar(name, route.dest)
         b.textBattery.visibility = if (route.batteryPercent >= 0) View.VISIBLE else View.GONE
         b.textBattery.text = ctx.getString(R.string.find_battery, route.batteryPercent)
-        b.textBattery.setTextColor(
-            if (route.batteryPercent in 0..15) ContextCompat.getColor(ctx, R.color.category_sos)
-            else com.google.android.material.color.MaterialColors.getColor(b.textBattery, com.google.android.material.R.attr.colorOnSurfaceVariant)
-        )
+        b.textBattery.setTextColor(ContextCompat.getColor(ctx, if (route.batteryPercent in 0..15) R.color.red else R.color.label_secondary))
         bindFrame(holder, route)
         b.root.setOnClickListener { onClick(route) }
     }

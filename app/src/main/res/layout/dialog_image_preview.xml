@@ -11,7 +11,7 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="@color/surface_high"
+        android:background="@color/fill_strong"
         android:contentDescription="@string/image_cd"
         android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.P2p.Photo" />
@@ -21,11 +21,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="@color/label_secondary" />
 
     <com.google.android.material.textfield.TextInputLayout
-        style="?attr/textInputOutlinedStyle"
+        style="@style/Widget.P2p.TextField.OnCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"

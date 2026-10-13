@@ -1,25 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_conversations"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        tools:listitem="@layout/item_conversation" />
+    android:layout_height="match_parent"
+    android:background="@color/bg_plain"
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/hint_dm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:padding="24dp"
-        android:text="@string/chats_empty"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant" />
-</FrameLayout>
+        android:layout_marginHorizontal="@dimen/section_text_inset"
+        android:layout_marginTop="10dp"
+        android:accessibilityHeading="true"
+        android:gravity="center_vertical"
+        android:minHeight="44dp"
+        android:text="@string/nav_chats"
+        android:textAppearance="?attr/textAppearanceHeadlineLarge" />
+
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/section_text_inset"
+        android:layout_marginBottom="8dp"
+        android:drawablePadding="6dp"
+        android:gravity="center_vertical"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="@color/label_secondary"
+        app:drawableStartCompat="@drawable/bg_status_dot"
+        tools:text="Nối trực tiếp 2 máy, thấy 4 máy" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_conversations"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/tab_bar_clearance"
+            tools:listitem="@layout/item_conversation" />
+
+        <TextView
+            android:id="@+id/hint_dm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/tab_bar_clearance"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:paddingHorizontal="40dp"
+            android:text="@string/chats_empty"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/label_secondary"
+            app:drawableTint="@color/label_tertiary"
+            app:drawableTopCompat="@drawable/ic_tab_chats" />
+    </FrameLayout>
+</LinearLayout>

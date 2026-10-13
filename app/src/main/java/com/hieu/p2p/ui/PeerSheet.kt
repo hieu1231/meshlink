@@ -52,6 +52,7 @@ class PeerSheet : BottomSheetDialogFragment() {
         binding.buttonTrace.setOnClickListener { mesh.node.trace(peer) }
         viewLifecycleOwner.collectWhileStarted(mesh.node.trace) { renderTrace(it) }
 
+        binding.buttonClose.setOnClickListener { dismiss() }
         binding.buttonMessage.setOnClickListener {
             ConversationActivity.openDirect(requireContext(), peer)
             dismiss()
@@ -188,7 +189,7 @@ class PeerSheet : BottomSheetDialogFragment() {
         val row = ItemTraceStepBinding.inflate(layoutInflater, b.traceSteps, false)
         row.step.text = step
         row.step.backgroundTintList = android.content.res.ColorStateList.valueOf(
-            color ?: androidx.core.content.ContextCompat.getColor(requireContext(), R.color.status_offline)
+            color ?: androidx.core.content.ContextCompat.getColor(requireContext(), R.color.gray)
         )
         row.name.text = name
         row.role.text = role.orEmpty()

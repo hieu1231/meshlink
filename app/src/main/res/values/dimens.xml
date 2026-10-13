@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="screen_margin">16dp</dimen>
-    <dimen name="avatar_size">44dp</dimen>
-    <dimen name="bubble_max_width">280dp</dimen>
+    <!-- Section titles and footers line up with the text inside cards. -->
+    <dimen name="section_text_inset">20dp</dimen>
+    <dimen name="avatar_size">52dp</dimen>
+    <dimen name="avatar_small">40dp</dimen>
+    <dimen name="bubble_max_width">270dp</dimen>
     <dimen name="photo_width">240dp</dimen>
+    <dimen name="tab_bar_height">60dp</dimen>
+    <!-- Room left under scrolling content so its end clears the floating tab bar. -->
+    <dimen name="tab_bar_clearance">92dp</dimen>
 </resources>

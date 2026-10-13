@@ -1,24 +1,28 @@
 package com.hieu.p2p.ui
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.hieu.p2p.R
 import com.hieu.p2p.data.Board
 import com.hieu.p2p.data.BoardCategory
 import com.hieu.p2p.data.BoardItem
 import com.hieu.p2p.databinding.FragmentBoardBinding
 import com.hieu.p2p.databinding.ItemBoardBinding
+import com.hieu.p2p.databinding.SheetBoardItemBinding
 import com.hieu.p2p.mesh.core.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
@@ -35,6 +39,7 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
     private val binding get() = _binding!!
     private var items: List<BoardItem> = emptyList()
     private var filter: BoardCategory? = null
+    private var me: GeoPoint? = null
     private lateinit var adapter: BoardAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,13 +47,6 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
         adapter = BoardAdapter(::onItemClick)
         binding.listBoard.layoutManager = LinearLayoutManager(requireContext())
         binding.listBoard.adapter = adapter
-        binding.listBoard.addItemDecoration(
-            MaterialDividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL).apply {
-                dividerInsetStart = resources.getDimensionPixelSize(R.dimen.screen_margin)
-                dividerInsetEnd = resources.getDimensionPixelSize(R.dimen.screen_margin)
-                isLastItemDecorated = false
-            }
-        )
 
         binding.chipsFilter.setOnCheckedStateChangeListener { _, ids ->
             filter = when (ids.firstOrNull()) {
@@ -63,9 +61,11 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
         binding.fabPost.setOnClickListener { showEditor(null) }
 
         val node = mesh.node
+        viewLifecycleOwner.collectWhileStarted(node.status) { binding.textStatus.bindStatusLine(it) }
         val boardItems = node.dataVersion.map { Board.list(node.data) }.flowOn(Dispatchers.Default)
         viewLifecycleOwner.collectWhileStarted(boardItems.combine(mesh.location.position) { list, me -> list to me }) { (list, me) ->
             items = list
+            this.me = me
             adapter.me = me
             render()
         }
@@ -77,23 +77,51 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
         binding.emptyBoard.visibility = if (shown.isEmpty()) View.VISIBLE else View.GONE
     }
 
+    /** Detail sheet: the whole post, then what you can do with it. */
     private fun onItemClick(item: BoardItem) {
-        val mine = item.author == mesh.myId
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(item.title)
-            .setMessage(item.detail.ifBlank { null })
-        if (mine) {
-            dialog.setPositiveButton(R.string.board_edit) { _, _ -> showEditor(item) }
-            dialog.setNeutralButton(R.string.board_delete) { _, _ -> confirmDelete(item) }
-        } else {
-            dialog.setPositiveButton(R.string.board_message_author) { _, _ ->
-                ConversationActivity.openDirect(requireContext(), item.author)
+        val ctx = requireContext()
+        val dialog = BottomSheetDialog(ctx)
+        val sheet = SheetBoardItemBinding.inflate(layoutInflater)
+        bindCategory(sheet.textCategory, item.category)
+        sheet.textTime.text = Formats.time(item.updatedAt)
+        sheet.textTitle.text = item.title
+        sheet.textDetail.text = item.detail
+        sheet.textDetail.isVisible = item.detail.isNotBlank()
+        bindLocation(sheet.textLocation, me, item)
+        sheet.avatarAuthor.bindAvatar(item.authorName.ifBlank { item.author.short }, item.author)
+        sheet.textAuthor.text = authorLine(ctx, item)
+
+        if (item.author == mesh.myId) {
+            sheet.buttonPrimary.setText(R.string.board_edit)
+            sheet.buttonPrimary.setIconResource(R.drawable.ic_edit)
+            sheet.buttonPrimary.setOnClickListener {
+                dialog.dismiss()
+                showEditor(item)
             }
-            dialog.setNeutralButton(R.string.board_find_author) { _, _ ->
+            sheet.buttonSecondary.setText(R.string.board_delete)
+            sheet.buttonSecondary.icon = null
+            sheet.buttonSecondary.backgroundTintList = ContextCompat.getColorStateList(ctx, R.color.red_soft)
+            sheet.buttonSecondary.setTextColor(ContextCompat.getColor(ctx, R.color.red))
+            sheet.buttonSecondary.setOnClickListener {
+                dialog.dismiss()
+                confirmDelete(item)
+            }
+        } else {
+            sheet.buttonPrimary.setText(R.string.board_message_author)
+            sheet.buttonPrimary.setIconResource(R.drawable.ic_tab_chats)
+            sheet.buttonPrimary.setOnClickListener {
+                dialog.dismiss()
+                ConversationActivity.openDirect(ctx, item.author)
+            }
+            sheet.buttonSecondary.setText(R.string.board_find_author)
+            sheet.buttonSecondary.setIconResource(R.drawable.ic_navigation)
+            sheet.buttonSecondary.setOnClickListener {
+                dialog.dismiss()
                 PeerSheet.newInstance(item.author).show(childFragmentManager, "peer")
             }
         }
-        dialog.setNegativeButton(R.string.close, null).show()
+        dialog.setContentView(sheet.root)
+        dialog.show()
     }
 
     private fun confirmDelete(item: BoardItem) {
@@ -132,32 +160,17 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
             val item = getItem(position)
             val b = holder.binding
             val ctx = b.root.context
-            val color = ContextCompat.getColor(ctx, item.category.color)
-            b.textCategory.setText(item.category.label)
-            b.textCategory.setTextColor(color)
-            b.rule.backgroundTintList = ColorStateList.valueOf(color)
-            b.row.setBackgroundColor(
-                if (item.category == BoardCategory.SOS) ContextCompat.getColor(ctx, R.color.sos_wash) else 0
-            )
+            bindCategory(b.textCategory, item.category)
+            // SOS posts get a red edge so they stand out while scrolling.
+            b.row.setBackgroundResource(if (item.category == BoardCategory.SOS) R.drawable.bg_card_sos else R.drawable.bg_card)
             b.textTitle.text = item.title
             b.textDetail.text = item.detail
             b.textDetail.visibility = if (item.detail.isBlank()) View.GONE else View.VISIBLE
             b.textTime.text = Formats.time(item.updatedAt)
-            val mine = me
-            val there = item.position
-            if (mine != null && there != null && !mine.directionReliableTo(there)) {
-                b.textLocation.visibility = View.VISIBLE
-                b.textLocation.text = ctx.getString(R.string.sos_near_line)
-            } else if (mine != null && there != null) {
-                b.textLocation.visibility = View.VISIBLE
-                b.textLocation.text = ctx.getString(
-                    R.string.sos_location_line, Formats.distance(mine.distanceTo(there)), Formats.compass(ctx, mine.bearingTo(there)),
-                )
-            } else {
-                b.textLocation.visibility = View.GONE
-            }
-            b.textAuthor.text = ctx.getString(R.string.board_author, item.authorName.ifBlank { item.author.short }, item.author.short)
-            b.root.setOnClickListener { onClick(item) }
+            bindLocation(b.textLocation, me, item)
+            b.avatarAuthor.bindAvatar(item.authorName.ifBlank { item.author.short }, item.author)
+            b.textAuthor.text = authorLine(ctx, item)
+            b.row.setOnClickListener { onClick(item) }
         }
 
         private object Diff : DiffUtil.ItemCallback<BoardItem>() {
@@ -166,3 +179,30 @@ class BoardFragment : Fragment(R.layout.fragment_board) {
         }
     }
 }
+
+private val BoardCategory.softColor: Int
+    get() = when (this) {
+        BoardCategory.SOS -> R.color.red_soft
+        BoardCategory.SAFE -> R.color.green_soft
+        BoardCategory.RESOURCE -> R.color.orange_soft
+        BoardCategory.INFO -> R.color.indigo_soft
+    }
+
+/** Category as a tinted capsule. */
+private fun bindCategory(tag: TextView, category: BoardCategory) {
+    tag.setText(category.label)
+    tag.setTextColor(ContextCompat.getColor(tag.context, category.color))
+    tag.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(tag.context, category.softColor))
+}
+
+private fun bindLocation(view: TextView, me: GeoPoint?, item: BoardItem) {
+    val ctx = view.context
+    val there = item.position
+    view.isVisible = me != null && there != null
+    if (me == null || there == null) return
+    view.text = if (!me.directionReliableTo(there)) ctx.getString(R.string.sos_near_line)
+    else ctx.getString(R.string.sos_location_line, Formats.distance(me.distanceTo(there)), Formats.compass(ctx, me.bearingTo(there)))
+}
+
+private fun authorLine(ctx: Context, item: BoardItem) =
+    ctx.getString(R.string.board_author, item.authorName.ifBlank { item.author.short }, item.author.short)

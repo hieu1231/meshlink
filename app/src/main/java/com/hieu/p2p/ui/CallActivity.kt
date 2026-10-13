@@ -5,18 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.SurfaceTexture
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.view.Surface
 import android.view.TextureView
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -59,7 +63,8 @@ class CallActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        // Always dark, so light status and navigation bar icons whatever the system theme.
+        enableEdgeToEdge(SystemBarStyle.dark(Color.TRANSPARENT), SystemBarStyle.dark(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
         // Ring over the lock screen and wake the display, like the phone's own dialler.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -83,6 +88,16 @@ class CallActivity : AppCompatActivity() {
         binding.bigName.text = name
         binding.topName.text = name
         binding.bigAvatar.bindAvatar(name, peer)
+        // A deep wash of the caller's own colour behind everything, as on current call screens.
+        val wash = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                ColorUtils.blendARGB(MeshRadarView.avatarColor(peer), Color.BLACK, 0.45f),
+                ColorUtils.blendARGB(MeshRadarView.avatarColor(peer), Color.BLACK, 0.8f),
+                ContextCompat.getColor(this, R.color.call_bg),
+            ),
+        )
+        binding.cover.background = wash
 
         // Starting a call from the chat screen: place it now.
         if (intent.getBooleanExtra(EXTRA_DIAL, false) && savedInstanceState == null) {
@@ -235,8 +250,8 @@ class CallActivity : AppCompatActivity() {
 
     private fun toggle(button: com.google.android.material.button.MaterialButton, on: Boolean, onIcon: Int, offIcon: Int) {
         button.setIconResource(if (on) onIcon else offIcon)
-        button.backgroundTintList = ColorStateList.valueOf(if (on) 0xFFFFFFFF.toInt() else 0x33FFFFFF)
-        button.iconTint = ColorStateList.valueOf(if (on) ContextCompat.getColor(this, R.color.ink_night) else 0xFFFFFFFF.toInt())
+        button.backgroundTintList = ColorStateList.valueOf(if (on) Color.WHITE else ContextCompat.getColor(this, R.color.call_glass))
+        button.iconTint = ColorStateList.valueOf(if (on) ContextCompat.getColor(this, R.color.call_bg) else Color.WHITE)
     }
 
     /** Fills the screen with the remote picture, cropping the overflow (like other video apps). */

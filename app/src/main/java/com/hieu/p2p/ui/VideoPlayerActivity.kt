@@ -3,11 +3,14 @@ package com.hieu.p2p.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.hieu.p2p.databinding.ActivityVideoPlayerBinding
@@ -19,20 +22,21 @@ class VideoPlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVideoPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(SystemBarStyle.dark(Color.TRANSPARENT), SystemBarStyle.dark(Color.TRANSPARENT))
         super.onCreate(savedInstanceState)
         binding = ActivityVideoPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { v, insets ->
+        val header = binding.toolbar
+        ViewCompat.setOnApplyWindowInsetsListener(header.root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, 0)
+            v.updatePadding(left = bars.left + dp(10), top = bars.top + dp(6), right = bars.right + dp(10))
             insets
         }
-        binding.toolbar.setNavigationOnClickListener { finish() }
-        binding.toolbar.title = intent.getStringExtra(EXTRA_TITLE)
-        binding.toolbar.subtitle = intent.getStringExtra(EXTRA_SUBTITLE)
+        header.buttonBack.setOnClickListener { finish() }
+        header.textTitle.text = intent.getStringExtra(EXTRA_TITLE)
+        header.textSubtitle.text = intent.getStringExtra(EXTRA_SUBTITLE)
         binding.player.setControllerVisibilityListener(
-            androidx.media3.ui.PlayerView.ControllerVisibilityListener { visibility -> binding.toolbar.visibility = visibility }
+            androidx.media3.ui.PlayerView.ControllerVisibilityListener { visibility -> header.root.visibility = visibility }
         )
     }
 
@@ -52,6 +56,8 @@ class VideoPlayerActivity : AppCompatActivity() {
         player = null
         super.onStop()
     }
+
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     companion object {
         private const val EXTRA_PATH = "path"

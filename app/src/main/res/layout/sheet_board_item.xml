@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_margin"
+        android:paddingBottom="20dp">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            style="@style/Widget.P2p.Grabber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.hieu.p2p.ui.CardLayout
+            style="@style/Widget.P2p.Card.Sheet"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:padding="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_category"
+                    style="@style/Widget.P2p.Tag"
+                    tools:backgroundTint="@color/red_soft"
+                    tools:text="SOS"
+                    tools:textColor="@color/red" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/text_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/label_secondary"
+                    tools:text="14:02" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:accessibilityHeading="true"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textIsSelectable="true"
+                tools:text="Kẹt ở tầng 3, nhà số 12 Lê Lợi" />
+
+            <TextView
+                android:id="@+id/text_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="2dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textIsSelectable="true"
+                tools:text="3 người lớn, 1 trẻ em. Nước đang lên, cần xuồng." />
+
+            <TextView
+                android:id="@+id/text_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_capsule"
+                android:backgroundTint="@color/accent_soft"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="@color/accent"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_location_fill"
+                app:drawableTint="@color/accent"
+                tools:text="Cách bạn 120 m về hướng Đông Bắc"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/avatar_author"
+                    style="@style/Widget.P2p.Avatar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:textSize="13sp"
+                    tools:text="L" />
+
+                <TextView
+                    android:id="@+id/text_author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="@color/label_secondary"
+                    tools:text="Lan, 6C7C-3649" />
+            </LinearLayout>
+        </com.hieu.p2p.ui.CardLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_primary"
+            style="@style/Widget.P2p.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:iconGravity="textStart"
+            tools:icon="@drawable/ic_tab_chats"
+            tools:text="@string/board_message_author" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_secondary"
+            style="@style/Widget.P2p.Button.Tinted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:iconGravity="textStart"
+            tools:icon="@drawable/ic_navigation"
+            tools:text="@string/board_find_author" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

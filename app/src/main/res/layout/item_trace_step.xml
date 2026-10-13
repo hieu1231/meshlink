@@ -17,12 +17,12 @@
             android:layout_width="2dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:background="@color/outline_soft" />
+            android:background="@color/separator" />
 
         <TextView
             android:id="@+id/step"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_avatar"
             android:gravity="center"
@@ -39,7 +39,7 @@
         android:layout_weight="1"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         tools:text="Bình" />
 
     <TextView
@@ -47,16 +47,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:textAppearance="?attr/textAppearanceLabelSmall"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:textColor="@color/label_secondary"
         tools:text="chuyển tiếp" />
 
     <TextView
         android:id="@+id/rtt"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:gravity="end"
-        android:textAppearance="?attr/textAppearanceLabelLarge"
         android:fontFeatureSettings="tnum"
+        android:gravity="end"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
         tools:text="42 ms" />
 </LinearLayout>

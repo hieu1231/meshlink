@@ -3,36 +3,114 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="16dp">
+    android:paddingHorizontal="@dimen/screen_margin"
+    android:paddingBottom="20dp">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        style="@style/Widget.P2p.Grabber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/attach_photo"
-        style="@style/Widget.P2p.SheetRow"
-        android:drawableStart="@drawable/ic_image"
-        android:text="@string/attach_photo" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="14dp"
+        android:accessibilityHeading="true"
+        android:gravity="center"
+        android:text="@string/attach_title"
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-    <TextView
-        android:id="@+id/attach_video"
-        style="@style/Widget.P2p.SheetRow"
-        android:drawableStart="@drawable/ic_video_library"
-        android:text="@string/attach_video" />
+    <com.hieu.p2p.ui.CardLayout
+        style="@style/Widget.P2p.Card.Sheet"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp">
 
-    <TextView
-        android:id="@+id/attach_record"
-        style="@style/Widget.P2p.SheetRow"
-        android:drawableStart="@drawable/ic_videocam"
-        android:text="@string/attach_record" />
+        <LinearLayout
+            android:id="@+id/attach_photo"
+            style="@style/Widget.P2p.SheetRow"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                style="@style/Widget.P2p.IconTile"
+                android:backgroundTint="@color/accent"
+                android:src="@drawable/ic_image" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:text="@string/attach_photo"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <ImageView style="@style/Widget.P2p.Chevron" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginStart="62dp"
+            android:background="@color/separator" />
+
+        <LinearLayout
+            android:id="@+id/attach_video"
+            style="@style/Widget.P2p.SheetRow"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                style="@style/Widget.P2p.IconTile"
+                android:backgroundTint="@color/indigo"
+                android:src="@drawable/ic_video_library" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:text="@string/attach_video"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <ImageView style="@style/Widget.P2p.Chevron" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginStart="62dp"
+            android:background="@color/separator" />
+
+        <LinearLayout
+            android:id="@+id/attach_record"
+            style="@style/Widget.P2p.SheetRow"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                style="@style/Widget.P2p.IconTile"
+                android:backgroundTint="@color/red"
+                android:src="@drawable/ic_videocam" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:text="@string/attach_record"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+            <ImageView style="@style/Widget.P2p.Chevron" />
+        </LinearLayout>
+    </com.hieu.p2p.ui.CardLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="8dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginTop="10dp"
         android:text="@string/attach_note"
         android:textAppearance="?attr/textAppearanceBodySmall"
-        android:textColor="?attr/colorOnSurfaceVariant" />
+        android:textColor="@color/label_secondary" />
 </LinearLayout>

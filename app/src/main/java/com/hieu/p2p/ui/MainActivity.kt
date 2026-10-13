@@ -5,13 +5,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -25,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val mesh get() = (application as P2pApp).mesh
+    private val tabs by lazy { listOf(binding.tabMesh, binding.tabChats, binding.tabBoard) }
+    private var currentTab = R.id.tab_mesh
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -32,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 MeshService.start(this)
             } else {
                 Snackbar.make(binding.root, R.string.permission_denied, Snackbar.LENGTH_LONG)
-                    .setAnchorView(binding.bottomNav)
+                    .setAnchorView(binding.tabBar)
                     .setAction(R.string.settings) {
                         startActivity(
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null))
@@ -47,21 +51,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
 
-        // The bottom navigation pads itself for the navigation bar.
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+        // Content stays out of the status and navigation bars; the tab bar floats just above the latter.
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            v.setPadding(bars.left, bars.top, bars.right, 0)
+            binding.fragmentContainer.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            binding.tabBar.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = bars.bottom + dp(10) }
             insets
         }
 
-        binding.bottomNav.setOnItemSelectedListener {
-            showTab(it.itemId)
-            updateSubtitle(it.itemId)
-            true
-        }
-        if (savedInstanceState == null) showTab(R.id.nav_mesh)
+        binding.tabBar.capsuleShadow()
+        tabs.forEach { tab -> tab.setOnClickListener { selectTab(tab.id) } }
+        selectTab(savedInstanceState?.getInt(STATE_TAB) ?: R.id.tab_mesh)
 
         if (mesh.displayName.isBlank()) promptName(firstRun = true)
 
@@ -69,37 +70,25 @@ class MainActivity : AppCompatActivity() {
         if (mesh.wantsRunning && !mesh.node.status.value.running && MeshPermissions.canRunMesh(this)) {
             MeshService.start(this)
         }
-
-        collectWhileStarted(mesh.node.status) { updateSubtitle() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_TAB, currentTab)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_logs -> {
-            LogBottomSheet().show(supportFragmentManager, "log")
-            true
-        }
-        R.id.action_rename -> {
-            promptName(firstRun = false)
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
+    private fun selectTab(id: Int) {
+        currentTab = id
+        tabs.forEach { it.isSelected = it.id == id }
+        // The chat list is a plain white page; the other tabs are grouped grey pages.
+        binding.root.setBackgroundColor(ContextCompat.getColor(this, if (id == R.id.tab_chats) R.color.bg_plain else R.color.bg_grouped))
+        showTab(id)
     }
 
-    /** The mesh tab states connection status in its own headline; other tabs get it here. */
-    private fun updateSubtitle(tab: Int = binding.bottomNav.selectedItemId) {
-        val s = mesh.node.status.value
-        binding.toolbar.subtitle = when {
-            tab == R.id.nav_mesh -> null
-            !s.running -> getString(R.string.toolbar_offline)
-            s.links == 0 -> getString(R.string.toolbar_searching)
-            else -> getString(R.string.toolbar_online, s.links, s.routes.size)
-        }
-    }
+    /** Anchor for snackbars so they sit above the floating tab bar. */
+    val snackAnchor: View get() = binding.tabBar
+
+    fun showLog() = LogBottomSheet().show(supportFragmentManager, "log")
 
     fun toggleMesh() {
         if (mesh.node.status.value.running) {
@@ -122,8 +111,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createTab(itemId: Int): Fragment = when (itemId) {
-        R.id.nav_chats -> ChatsFragment()
-        R.id.nav_board -> BoardFragment()
+        R.id.tab_chats -> ChatsFragment()
+        R.id.tab_board -> BoardFragment()
         else -> MeshFragment()
     }
 
@@ -141,5 +130,11 @@ class MainActivity : AppCompatActivity() {
             }
         if (!firstRun) builder.setNegativeButton(R.string.cancel, null)
         builder.show()
+    }
+
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
+
+    companion object {
+        private const val STATE_TAB = "tab"
     }
 }

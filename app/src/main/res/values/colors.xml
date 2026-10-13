@@ -1,42 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Field-gear palette: dark navy ink + high-vis signal yellow, on a cool mist ground. -->
-    <color name="ink">#15232F</color>
-    <color name="ink_soft">#56656F</color>
-    <color name="signal">#FFC21A</color>
-    <color name="on_signal">#2B2100</color>
-    <color name="signal_soft">#FFE7A3</color>
+    <!--
+        iOS-style system palette (light). Grouped screens sit on bg_grouped with white cards; plain
+        screens (chat list, conversation) sit on bg_plain. One accent (system blue) for actions,
+        semantic red/green kept for SOS and "I'm safe".
+    -->
+    <color name="bg_grouped">#F2F2F7</color>
+    <color name="bg_plain">#FFFFFF</color>
+    <color name="bg_plain_fade">#C7FFFFFF</color>
+    <color name="bg_plain_clear">#00FFFFFF</color>
+    <color name="card">#FFFFFF</color>
+    <!-- Sheets and dialogs: white in light mode, one step lighter than cards in dark mode. -->
+    <color name="card_elevated">#FFFFFF</color>
+    <!-- Sheets use the grouped look: grey ground, white cards (dark: one step up each). -->
+    <color name="sheet_bg">#F2F2F7</color>
+    <color name="sheet_card">#FFFFFF</color>
+    <color name="fill">#EEEEF0</color>
+    <color name="fill_strong">#E3E3E8</color>
+    <color name="separator">#D9D9DE</color>
 
-    <color name="surface">#F4F6F7</color>
-    <color name="surface_lowest">#FFFFFF</color>
-    <color name="surface_low">#EEF1F3</color>
-    <color name="surface_mid">#E8ECEF</color>
-    <color name="surface_high">#E1E6EA</color>
-    <color name="surface_highest">#DAE0E5</color>
-    <color name="outline">#8A979F</color>
-    <color name="outline_soft">#C9D1D6</color>
+    <color name="label">#0B0B0D</color>
+    <color name="label_secondary">#83838A</color>
+    <color name="label_tertiary">#C2C2C7</color>
 
-    <color name="primary">#1C2E3D</color>
-    <color name="on_primary">#FFFFFF</color>
-    <color name="primary_container">#DCE6EE</color>
-    <color name="on_primary_container">#0E1A24</color>
+    <color name="accent">#007AFF</color>
+    <color name="on_accent">#FFFFFF</color>
+    <color name="accent_soft">#E5F1FF</color>
 
-    <color name="bubble_out">#1C2E3D</color>
-    <color name="on_bubble_out">#F4F6F7</color>
+    <color name="red">#FF3B30</color>
+    <color name="red_soft">#FFE9E7</color>
+    <color name="green">#34C759</color>
+    <color name="green_soft">#E4F7E9</color>
+    <color name="orange">#FF9500</color>
+    <color name="orange_soft">#FFF1DE</color>
+    <color name="indigo">#5856D6</color>
+    <color name="indigo_soft">#ECECFB</color>
+    <color name="gray">#8E8E93</color>
 
-    <color name="status_online">#1E8E5A</color>
-    <color name="status_offline">#8A979F</color>
+    <!-- Board categories. -->
+    <color name="category_sos">@color/red</color>
+    <color name="category_safe">@color/green</color>
+    <color name="category_resource">@color/orange</color>
+    <color name="category_info">@color/indigo</color>
 
-    <color name="category_sos">#D7263D</color>
-    <color name="category_safe">#1E8E5A</color>
-    <color name="category_resource">#2F6FDE</color>
-    <color name="category_info">#6E5A8F</color>
-    <color name="sos_wash">#FCE8EA</color>
-    <!-- SOS button stays deep red in both themes so white text keeps full contrast. -->
-    <color name="sos_button">#D7263D</color>
+    <!-- Messages. -->
+    <color name="bubble_out">#007AFF</color>
+    <color name="on_bubble_out">#FFFFFF</color>
+    <color name="bubble_in">#E9E9EB</color>
+    <color name="on_bubble_in">#0B0B0D</color>
+
+    <!-- Floating "glass" bars and buttons: translucent, with a hairline edge. -->
+    <color name="glass">#E6FAFAFC</color>
+    <color name="glass_stroke">#14000000</color>
+    <color name="tab_selected">#EBEBEF</color>
+
     <!-- Call screen: always dark, whatever the theme. -->
-    <color name="ink_night">#0E1822</color>
-    <color name="category_safe_strong">#1E8E5A</color>
+    <color name="call_bg">#0B0B10</color>
+    <color name="call_glass">#29FFFFFF</color>
+    <color name="call_text_soft">#B3FFFFFF</color>
+    <color name="call_green">#30C452</color>
 
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>

@@ -2,16 +2,28 @@ package com.hieu.p2p.ui
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.graphics.Outline
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.text.format.DateUtils
+import android.view.View
+import android.view.ViewOutlineProvider
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.hieu.p2p.P2pApp
 import com.hieu.p2p.R
 import com.hieu.p2p.data.MeshRuntime
+import com.hieu.p2p.mesh.MeshStatus
 import com.hieu.p2p.mesh.core.NodeId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -28,15 +40,77 @@ fun <T> LifecycleOwner.collectWhileStarted(flow: Flow<T>, block: suspend (T) -> 
     }
 }
 
-/** Muted field-gear tones: distinct from each other, never competing with signal yellow or SOS red. */
+/** Avatar gradients, light top to deeper base; the base is the node's colour everywhere else. */
+private val AVATAR_TOPS = longArrayOf(
+    0xFFFF8E86, 0xFFFFC266, 0xFFB9A2FF, 0xFFA2DE7A, 0xFF6FE3D4, 0xFF7CCBFF, 0xFFF7A2D6, 0xFFA9B4C2,
+).map { it.toInt() }
 internal val AVATAR_PALETTE = longArrayOf(
-    0xFF2E5E8C, 0xFF7A4E9C, 0xFFB4532A, 0xFF2E7D6B, 0xFF8C6D1F, 0xFF5C6B7A, 0xFFA23E5C, 0xFF3F7A3A,
+    0xFFE8524A, 0xFFF2892E, 0xFF7A63E6, 0xFF4DB34A, 0xFF2CB5A6, 0xFF2F8CEB, 0xFFDB5BAA, 0xFF6C7A8C,
 ).map { it.toInt() }
 
-/** Initial-letter avatar with a colour that is stable per node. */
+private fun avatarIndex(id: NodeId) = ((id.raw ushr 1) % AVATAR_PALETTE.size).toInt()
+
+private fun gradientOval(top: Int, bottom: Int) =
+    GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(top, bottom)).apply { shape = GradientDrawable.OVAL }
+
+/** Initial-letter avatar on a gradient that is stable per node. */
 fun TextView.bindAvatar(name: String, id: NodeId) {
     text = name.trim().firstOrNull()?.uppercase() ?: "?"
-    backgroundTintList = ColorStateList.valueOf(MeshRadarView.avatarColor(id))
+    val i = avatarIndex(id)
+    backgroundTintList = null
+    background = gradientOval(AVATAR_TOPS[i], AVATAR_PALETTE[i])
+}
+
+/** The public channel's avatar: accent gradient, with a globe drawn on top by the layout. */
+fun TextView.bindChannelAvatar() {
+    text = ""
+    backgroundTintList = null
+    background = gradientOval(0xFF6AC8FF.toInt(), ContextCompat.getColor(context, R.color.accent))
+}
+
+/** A node's colour for text (sender names): deeper in light mode, lighter in dark mode, so it reads on bubbles. */
+fun avatarTextColor(context: Context, id: NodeId): Int {
+    val i = avatarIndex(id)
+    val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    return if (night) AVATAR_TOPS[i] else ColorUtils.blendARGB(AVATAR_PALETTE[i], 0xFF000000.toInt(), 0.18f)
+}
+
+/**
+ * A soft shadow under a floating translucent capsule (tab bar). A see-through background reports
+ * a transparent outline, which casts no shadow, so the outline is given here instead.
+ */
+fun View.capsuleShadow() {
+    outlineProvider = object : ViewOutlineProvider() {
+        override fun getOutline(view: View, outline: Outline) {
+            outline.setRoundRect(0, 0, view.width, view.height, view.height / 2f)
+            outline.alpha = 0.6f
+        }
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        outlineAmbientShadowColor = 0x40000000
+        outlineSpotShadowColor = 0x40000000
+    }
+}
+
+/** Hairline between rows, starting under the row's text as in iOS lists; none after the last row. */
+fun insetDivider(context: Context, startDp: Int) =
+    MaterialDividerItemDecoration(context, LinearLayoutManager.VERTICAL).apply {
+        val density = context.resources.displayMetrics.density
+        dividerColor = ContextCompat.getColor(context, R.color.separator)
+        dividerThickness = (0.5f * density).roundToInt().coerceAtLeast(1)
+        dividerInsetStart = (startDp * density).roundToInt()
+        isLastItemDecorated = false
+    }
+
+/** One-line connection state with a coloured dot, for screen headers. */
+fun TextView.bindStatusLine(s: MeshStatus) {
+    val (res, color) = when {
+        !s.running -> context.getString(R.string.toolbar_offline) to R.color.gray
+        s.links == 0 -> context.getString(R.string.toolbar_searching) to R.color.orange
+        else -> context.getString(R.string.toolbar_online, s.links, s.routes.size) to R.color.green
+    }
+    text = res
+    TextViewCompat.setCompoundDrawableTintList(this, ColorStateList.valueOf(ContextCompat.getColor(context, color)))
 }
 
 object Formats {

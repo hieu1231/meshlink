@@ -12,14 +12,7 @@
         app:show_buffering="when_playing"
         app:use_controller="true" />
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <include
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#66000000"
-        app:navigationContentDescription="@string/close"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="@color/white"
-        app:subtitleTextColor="#CCFFFFFF"
-        app:titleTextColor="@color/white" />
+        layout="@layout/view_media_header" />
 </FrameLayout>

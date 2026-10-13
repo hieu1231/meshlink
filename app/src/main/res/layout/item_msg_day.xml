@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="14dp"
+    android:paddingTop="16dp"
     android:paddingBottom="8dp">
 
     <TextView
@@ -15,6 +15,6 @@
         android:paddingHorizontal="12dp"
         android:paddingVertical="4dp"
         android:textAppearance="?attr/textAppearanceLabelMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/label_secondary"
         tools:text="Hôm nay" />
 </FrameLayout>

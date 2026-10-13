@@ -22,10 +22,16 @@
     <string name="status_searching">Để máy gần những người cũng đang mở MeshLink. Lần đầu có thể mất 10 đến 30 giây.</string>
     <string name="status_outdated">%1$d máy ở gần đang dùng bản MeshLink khác nên không trao đổi được tin. Cài cùng một bản app cho cả hai máy.</string>
     <string name="status_on">Tin của bạn tới được %1$d máy. Máy này đã chuyển tiếp %2$d gói tin cho người khác.</string>
+    <string name="state_on">Đang hoạt động</string>
+    <string name="state_searching">Đang tìm máy</string>
+    <string name="state_off">Đang tắt</string>
     <string name="mesh_on">Bật mạng lưới</string>
     <string name="mesh_off">Tắt mạng lưới</string>
     <string name="action_sos">Gửi SOS</string>
     <string name="action_safe">Tôi an toàn</string>
+    <string name="action_sos_hint">Cầu cứu cả mạng</string>
+    <string name="action_safe_hint">Báo bình an</string>
+    <string name="section_device">Máy của bạn</string>
     <string name="peers_header">Máy trong mạng lưới</string>
     <string name="peers_empty">Chưa thấy máy nào. Chạm vào một máy khi nó hiện ra để nhắn riêng.</string>
     <string name="peer_direct">Nối trực tiếp với bạn</string>
@@ -108,6 +114,7 @@
     <string name="call_speaker">Loa ngoài</string>
     <string name="call_earpiece">Loa trong</string>
     <string name="call_end">Kết thúc</string>
+    <string name="call_secure">Mã hóa đầu-cuối</string>
     <string name="call_calling">Đang gọi…</string>
     <string name="call_ringing">Đang đổ chuông…</string>
     <string name="call_incoming">Đang gọi thoại cho bạn</string>
@@ -162,6 +169,7 @@
 
     <string name="attach_image">Gửi ảnh</string>
     <string name="attach_media">Đính kèm ảnh hoặc video</string>
+    <string name="attach_title">Gửi kèm</string>
     <string name="attach_photo">Ảnh từ thư viện</string>
     <string name="attach_video">Video từ thư viện</string>
     <string name="attach_record">Quay video</string>
@@ -207,6 +215,11 @@
 
     <!-- Board -->
     <string name="board_post">Đăng tin</string>
+    <string name="board_post_short">Đăng</string>
+    <string name="board_send_short">Gửi</string>
+    <string name="board_empty_title">Chưa có tin nào</string>
+    <string name="board_category_label">Loại tin</string>
+    <string name="board_editor_note">Tin đăng hiện trên mọi máy trong mạng lưới, kể cả máy nối vào sau. Bạn sửa hoặc gỡ được bất cứ lúc nào.</string>
     <string name="board_empty">Bảng tin chung của cả mạng lưới. Đăng SOS, báo an toàn, hoặc chỉ chỗ có nước, thuốc, chỗ trú.</string>
     <string name="board_filter_all">Tất cả</string>
     <string name="board_author">%1$s, %2$s</string>
@@ -233,6 +246,7 @@
     <string name="save">Lưu</string>
     <string name="cancel">Hủy</string>
     <string name="close">Đóng</string>
+    <string name="back">Quay lại</string>
 
     <string name="log_title">Nhật ký kết nối</string>
     <string name="log_empty">Chưa có gì. Bật mạng lưới để xem máy tìm và nối với nhau ra sao.</string>
