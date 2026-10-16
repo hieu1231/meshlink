@@ -99,10 +99,10 @@ class ConversationActivity : AppCompatActivity() {
         val ready: Boolean get() = outgoing || status == DmStatus.RECEIVED
     }
 
-    /** A row in the list: a day separator, or a message with its place in a same-sender group. */
+    /** A time stamp after a pause, or a message with its place and delivery status in a run. */
     private sealed class Row(val key: String) {
-        class Day(val label: String) : Row("day-$label")
-        class Msg(val m: UiMessage, val first: Boolean, val last: Boolean) : Row(m.key)
+        class Day(val label: String, at: Long) : Row("day-$at")
+        class Msg(val m: UiMessage, val first: Boolean, val last: Boolean, val showStatus: Boolean) : Row(m.key)
     }
 
     private lateinit var binding: ActivityConversationBinding
@@ -235,11 +235,20 @@ class ConversationActivity : AppCompatActivity() {
             binding.headerTitle.text = name
             binding.headerAvatar.bindAvatar(name, peer)
             val route = s.routes.firstOrNull { it.dest == peer }
-            binding.headerSubtitle.text = when {
-                route == null -> getString(R.string.conversation_dm_no_route)
-                route.isNeighbor || route.viaNode == null -> getString(R.string.conversation_dm_direct)
-                else -> getString(R.string.conversation_dm_route, mesh.nameOf(route.viaNode), route.hops)
+            val (short, full) = when {
+                route == null -> getString(R.string.conversation_header_no_route) to getString(R.string.conversation_dm_no_route)
+                route.isNeighbor || route.viaNode == null ->
+                    getString(R.string.conversation_header_direct) to getString(R.string.conversation_dm_direct)
+                else -> getString(R.string.conversation_header_route, mesh.nameOf(route.viaNode), route.hops) to
+                    getString(R.string.conversation_dm_route, mesh.nameOf(route.viaNode), route.hops)
             }
+            binding.headerSubtitle.text = short
+            binding.headerSubtitle.contentDescription = full
+            val presence = if (route == null) null else ContextCompat.getDrawable(this, R.drawable.bg_status_dot)?.mutate()?.apply {
+                setTint(ContextCompat.getColor(this@ConversationActivity, R.color.green))
+                setBounds(0, 0, dp(6), dp(6))
+            }
+            binding.headerTitle.setCompoundDrawablesRelative(presence, null, null, null)
         }
 
         setupComposer(peer)
@@ -258,6 +267,7 @@ class ConversationActivity : AppCompatActivity() {
         val node = runtime.node
         val me = runtime.myId
         val dayFormat = SimpleDateFormat("EEEE, d 'tháng' M", Locale("vi"))
+        val clock = SimpleDateFormat("HH:mm", Locale.getDefault())
         val today = getString(R.string.day_today)
         val yesterday = getString(R.string.day_yesterday)
         val source: Flow<List<UiMessage>> = if (peer == null) {
@@ -278,20 +288,24 @@ class ConversationActivity : AppCompatActivity() {
         }
         return source.map { messages ->
             val out = ArrayList<Row>(messages.size + 8)
-            var lastDay = ""
+            val newestOut = messages.lastOrNull { it.outgoing }
             messages.forEachIndexed { i, m ->
-                val label = when {
-                    DateUtils.isToday(m.time) -> today
-                    DateUtils.isToday(m.time + DateUtils.DAY_IN_MILLIS) -> yesterday
-                    else -> dayFormat.format(Date(m.time)).replaceFirstChar { it.uppercase() }
-                }
-                if (label != lastDay) {
-                    out += Row.Day(label)
-                    lastDay = label
-                }
                 val prev = messages.getOrNull(i - 1)
+                if (prev == null || !sameDay(prev.time, m.time) || m.time - prev.time >= STAMP_GAP_MS) {
+                    val day = when {
+                        DateUtils.isToday(m.time) -> today
+                        DateUtils.isToday(m.time + DateUtils.DAY_IN_MILLIS) -> yesterday
+                        else -> dayFormat.format(Date(m.time)).replaceFirstChar { it.uppercase() }
+                    }
+                    out += Row.Day(getString(R.string.message_stamp, day, clock.format(Date(m.time))), m.time)
+                }
                 val next = messages.getOrNull(i + 1)
-                out += Row.Msg(m, first = prev == null || !sameGroup(prev, m), last = next == null || !sameGroup(m, next))
+                out += Row.Msg(
+                    m,
+                    first = prev == null || !sameGroup(prev, m),
+                    last = next == null || !sameGroup(m, next),
+                    showStatus = m.outgoing && m.status != null && (m === newestOut || m.status == DmStatus.QUEUED),
+                )
             }
             out
         }.flowOn(Dispatchers.Default)
@@ -550,6 +564,7 @@ class ConversationActivity : AppCompatActivity() {
             override fun sizeOf(key: String, value: Bitmap) = value.byteCount
         }
         private val clock = SimpleDateFormat("HH:mm", Locale.getDefault())
+        private var revealed: String? = null
 
         fun refreshVoice(id: Long) {
             val index = currentList.indexOfFirst { it is Row.Msg && it.m.id == id }
@@ -622,22 +637,34 @@ class ConversationActivity : AppCompatActivity() {
             return Palette(text, if (out) (text and 0x00FFFFFF) or (0xBF shl 24) else ContextCompat.getColor(ctx, R.color.label_secondary))
         }
 
-        private fun bindMeta(time: TextView, icon: ImageView, m: UiMessage, p: Palette) {
-            time.text = clock.format(Date(m.time))
-            time.setTextColor(p.meta)
-            val ctx = icon.context
-            val (res, cd) = when (m.status?.takeIf { m.outgoing }) {
-                DmStatus.QUEUED -> R.drawable.ic_schedule to R.string.status_cd_queued
-                DmStatus.SENT -> R.drawable.ic_check to R.string.status_cd_sent
-                DmStatus.DELIVERED -> R.drawable.ic_done_all to R.string.status_cd_delivered
-                else -> 0 to 0
+        /** Delivery text sits below the bubble, in the same caption style as the iOS time stamps. */
+        private fun bindStatus(status: TextView, msg: Row.Msg) {
+            val m = msg.m
+            val ctx = status.context
+            val delivery = if (msg.showStatus) when (m.status) {
+                DmStatus.QUEUED -> ctx.getString(R.string.status_queued)
+                DmStatus.SENT -> ctx.getString(R.string.status_sent)
+                DmStatus.DELIVERED -> ctx.getString(R.string.status_delivered)
+                else -> null
+            } else null
+            val time = if (revealed == m.key) clock.format(Date(m.time)) else null
+            status.text = when {
+                delivery != null && time != null -> ctx.getString(R.string.message_status_at, delivery, time)
+                delivery != null -> delivery
+                else -> time
             }
-            icon.isVisible = res != 0
-            if (res != 0) {
-                icon.setImageResource(res)
-                icon.contentDescription = ctx.getString(cd)
-                // Delivered ticks at full strength: the one state worth noticing at a glance.
-                icon.imageTintList = ColorStateList.valueOf(if (m.status == DmStatus.DELIVERED) p.text else p.meta)
+            status.isVisible = !status.text.isNullOrEmpty()
+            status.setTextColor(ContextCompat.getColor(ctx, if (msg.showStatus && m.status == DmStatus.QUEUED) R.color.red else R.color.label_secondary))
+            val inset = if (showAvatars && !m.outgoing) 40 else 4
+            (status.layoutParams as LinearLayout.LayoutParams).marginStart = (inset * ctx.resources.displayMetrics.density).toInt()
+            status.setOnClickListener { toggleTime(m.key) }
+        }
+
+        private fun toggleTime(key: String) {
+            val before = revealed
+            revealed = if (before == key) null else key
+            currentList.forEachIndexed { i, row ->
+                if (row is Row.Msg && (row.m.key == key || row.m.key == before)) notifyItemChanged(i)
             }
         }
 
@@ -648,6 +675,17 @@ class ConversationActivity : AppCompatActivity() {
             val p = style(b.row, b.bubble, msg)
             b.textBody.text = m.text
             b.textBody.setTextColor(p.text)
+            b.textBody.setOnClickListener { toggleTime(m.key) }
+            b.bubble.setOnClickListener { toggleTime(m.key) }
+            b.textBody.setOnLongClickListener { view ->
+                val clipboard = view.context.getSystemService(android.content.ClipboardManager::class.java)
+                clipboard.setPrimaryClip(android.content.ClipData.newPlainText(null, m.text))
+                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                if (android.os.Build.VERSION.SDK_INT < 33) {
+                    android.widget.Toast.makeText(view.context, R.string.message_copied, android.widget.Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
             val showSender = !m.outgoing && m.sender != null && msg.first
             b.textSender.isVisible = showSender
             if (showSender) {
@@ -662,7 +700,7 @@ class ConversationActivity : AppCompatActivity() {
                 else -> View.INVISIBLE
             }
             if (withAvatar && msg.last) m.senderId?.let { b.avatar.bindAvatar(m.sender.orEmpty(), it) }
-            bindMeta(b.textTime, b.iconStatus, m, p)
+            bindStatus(b.textStatus, msg)
         }
 
         // -- photo / video
@@ -675,7 +713,9 @@ class ConversationActivity : AppCompatActivity() {
             b.textCaption.text = m.text
             b.textCaption.isVisible = m.text.isNotBlank()
             b.textCaption.setTextColor(p.text)
-            bindMeta(b.textTime, b.iconStatus, m, p)
+            b.textCaption.setOnClickListener { toggleTime(m.key) }
+            b.bubble.setOnClickListener { toggleTime(m.key) }
+            bindStatus(b.textStatus, msg)
 
             b.iconPlay.isVisible = isVideo && m.ready
             // While downloading, the length goes into the progress line instead of a chip under it.
@@ -728,7 +768,8 @@ class ConversationActivity : AppCompatActivity() {
             val m = msg.m
             val p = style(b.row, b.bubble, msg)
             val ctx = b.root.context
-            bindMeta(b.textTime, b.iconStatus, m, p)
+            bindStatus(b.textStatus, msg)
+            b.bubble.setOnClickListener { toggleTime(m.key) }
             b.textDuration.setTextColor(p.meta)
             b.waveform.setLevels(m.preview)
             // Outgoing: white disc on the blue bubble. Incoming: blue disc on the grey bubble.
@@ -769,7 +810,7 @@ class ConversationActivity : AppCompatActivity() {
             override fun areItemsTheSame(a: Row, b: Row) = a.key == b.key
             override fun areContentsTheSame(a: Row, b: Row): Boolean = when {
                 a is Row.Day && b is Row.Day -> a.label == b.label
-                a is Row.Msg && b is Row.Msg -> a.m == b.m && a.first == b.first && a.last == b.last
+                a is Row.Msg && b is Row.Msg -> a.m == b.m && a.first == b.first && a.last == b.last && a.showStatus == b.showStatus
                 else -> false
             }
         }
@@ -785,6 +826,7 @@ class ConversationActivity : AppCompatActivity() {
 
     companion object {
         private const val EXTRA_PEER = "peer"
+        private const val STAMP_GAP_MS = 15 * 60_000L
 
         fun openPublic(context: Context) {
             context.startActivity(Intent(context, ConversationActivity::class.java))

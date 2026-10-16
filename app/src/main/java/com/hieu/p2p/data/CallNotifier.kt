@@ -1,11 +1,13 @@
 package com.hieu.p2p.data
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.Ringtone
 import android.media.RingtoneManager
@@ -15,6 +17,7 @@ import android.os.Vibrator
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.hieu.p2p.P2pApp
 import com.hieu.p2p.R
 import com.hieu.p2p.mesh.call.CallPhase
@@ -37,6 +40,7 @@ class CallNotifier(private val context: Context, private val runtime: MeshRuntim
     private var ringtone: Ringtone? = null
     private var lastPhase = CallPhase.IDLE
     private var statsLog: Job? = null
+    private var screenVisible = false
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -76,6 +80,20 @@ class CallNotifier(private val context: Context, private val runtime: MeshRuntim
         }
     }
 
+    /**
+     * The call screen came to the front or left it. While it is showing, the incoming-call
+     * notification would only cover it with a second answer/decline pair, so it is withdrawn and
+     * posted again if the screen goes away while the call is still ringing.
+     */
+    fun setScreenVisible(visible: Boolean) {
+        screenVisible = visible
+        val state = runtime.node.call.value
+        when {
+            visible -> notifications.cancel(NOTIFICATION_ID)
+            state.phase == CallPhase.INCOMING -> postIncoming(state)
+        }
+    }
+
     /** Field numbers for real calls: `adb logcat -s MeshLink:I`. */
     private fun logStats(hops: Int) = scope.launch {
         while (true) {
@@ -87,6 +105,25 @@ class CallNotifier(private val context: Context, private val runtime: MeshRuntim
     }
 
     private fun ringFor(state: CallState) {
+        if (!screenVisible) postIncoming(state)
+        ringtone = RingtoneManager.getRingtone(context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE))?.apply {
+            audioAttributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).build()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) isLooping = true
+            play()
+        }
+        val pattern = longArrayOf(0, 600, 800)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator()?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator()?.vibrate(pattern, 0)
+        }
+    }
+
+    private fun postIncoming(state: CallState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) return
         val peer = state.peer ?: return
         val name = runtime.nameOf(peer)
         val open = PendingIntent.getActivity(
@@ -109,12 +146,6 @@ class CallNotifier(private val context: Context, private val runtime: MeshRuntim
             .addAction(0, context.getString(R.string.call_answer), open)
             .build()
         runCatching { notifications.notify(NOTIFICATION_ID, notification) }
-        ringtone = RingtoneManager.getRingtone(context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE))?.apply {
-            audioAttributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).build()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) isLooping = true
-            play()
-        }
-        vibrator()?.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 600, 800), 0))
     }
 
     private fun stopRinging() {

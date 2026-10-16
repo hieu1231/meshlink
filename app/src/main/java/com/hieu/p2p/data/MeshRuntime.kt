@@ -54,6 +54,9 @@ class MeshRuntime(context: Context) {
     val callEngine = CallEngine(appContext) { frame -> node.sendCallMedia(frame) }
     private val calls = CallNotifier(appContext, this)
 
+    /** The call screen tells us when it is in front, so the incoming-call notification stays out of its way. */
+    fun setCallScreenVisible(visible: Boolean) = calls.setScreenVisible(visible)
+
     init {
         node.logSink = { android.util.Log.i("MeshLink", it) }
         location.onUpdate = ::pushStatus

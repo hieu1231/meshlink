@@ -102,32 +102,11 @@
             android:paddingHorizontal="9dp"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             tools:text="Cầu sập ở km 12" />
-
-        <LinearLayout
-            android:id="@+id/meta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="9dp"
-            android:paddingBottom="3dp">
-
-            <TextView
-                android:id="@+id/text_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                tools:text="14:02" />
-
-            <ImageView
-                android:id="@+id/icon_status"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_marginStart="3dp"
-                android:importantForAccessibility="no"
-                tools:src="@drawable/ic_done_all" />
-        </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_status"
+        style="@style/Widget.P2p.MessageStatus"
+        tools:text="Đã gửi"
+        tools:visibility="visible" />
 </LinearLayout>

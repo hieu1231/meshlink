@@ -32,6 +32,7 @@ import com.hieu.p2p.mesh.core.ByteWriter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.nio.ByteBuffer
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.TimeUnit
@@ -94,7 +95,7 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
 
     private val _view = MutableStateFlow(View())
     val view: StateFlow<View> = _view.asStateFlow()
-    private fun update(f: (View) -> View) { _view.value = f(_view.value) }
+    private fun update(f: (View) -> View) { _view.update(f) }
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     @Volatile private var running = false
@@ -104,6 +105,7 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
 
     fun start(video: Boolean) {
         if (running) return
+        remoteVideoOn = true
         running = true
         stats = Stats()
         lossWindow.reset()
@@ -474,7 +476,7 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
         videoSize = chooseSize()
         bitrate = START_VIDEO_BITRATE
         val encoder = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC)
-        val format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, videoSize.width, videoSize.height).apply {
+        fun format() = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, videoSize.width, videoSize.height).apply {
             setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
             setInteger(MediaFormat.KEY_BIT_RATE, bitrate)
             setInteger(MediaFormat.KEY_FRAME_RATE, FPS)
@@ -515,10 +517,13 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
         )
         var configured = false
         for (keep in extras.size downTo 0) {
-            extras.forEachIndexed { i, (key, value) -> if (i < keep) format.setInteger(key, value) else format.removeKey(key) }
+            // Each attempt starts clean; removeKey is only available from Android 10.
+            val attempt = format().apply {
+                extras.take(keep).forEach { (key, value) -> setInteger(key, value) }
+            }
             try {
                 encoder.setCallback(callback, handler)
-                encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+                encoder.configure(attempt, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
                 configured = true
                 break
             } catch (e: Exception) {
@@ -686,7 +691,8 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
     }
 
     private fun onVideoFragment(frame: ByteArray) {
-        if (frame.size < 10) return
+        // Frames queued before the peer switched its camera off must not show it again.
+        if (!remoteVideoOn || frame.size < 10) return
         val r = ByteReader(frame)
         r.byte()
         val id = r.int()
@@ -696,7 +702,6 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
         val rotation = r.byte() * 90
         val part = r.raw(r.remaining)
         if (count == 0 || index >= count) return
-        remoteVideoOn = true
         val complete: Assembly
         synchronized(assemblies) {
             if (id <= lastDecoded) return
@@ -748,6 +753,7 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
 
     /** Runs on the decode thread. */
     private fun decode(data: ByteArray, rotation: Int) {
+        if (!running || !remoteVideoOn) return
         val surface = remoteSurface ?: return
         if (decoder == null || rotation != decoderRotation) {
             decoder?.let { runCatching { it.stop() }; it.release() }
@@ -782,12 +788,12 @@ class CallEngine(private val context: Context, private val send: (ByteArray) -> 
                         val w = f.getInteger(MediaFormat.KEY_WIDTH)
                         val h = f.getInteger(MediaFormat.KEY_HEIGHT)
                         val swap = rotation % 180 != 0
-                        update { it.copy(remoteVideo = true, remoteWidth = if (swap) h else w, remoteHeight = if (swap) w else h) }
+                        update { it.copy(remoteVideo = remoteVideoOn, remoteWidth = if (swap) h else w, remoteHeight = if (swap) w else h) }
                     }
                     out >= 0 -> {
                         d.releaseOutputBuffer(out, true)
                         stats.videoFramesDecoded.incrementAndGet()
-                        if (!_view.value.remoteVideo && remoteVideoOn) update { it.copy(remoteVideo = true) }
+                        if (!_view.value.remoteVideo) update { it.copy(remoteVideo = remoteVideoOn) }
                     }
                     else -> break
                 }

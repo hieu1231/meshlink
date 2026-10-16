@@ -162,6 +162,12 @@
     <string name="conversation_dm_route">Mã hóa đầu-cuối, qua %1$s, cách %2$d bước</string>
     <string name="conversation_dm_direct">Mã hóa đầu-cuối, nối trực tiếp</string>
     <string name="conversation_dm_no_route">Ngoài vùng phủ. Tin sẽ tự gửi khi có đường</string>
+    <string name="conversation_header_route">Qua %1$s, %2$d bước</string>
+    <string name="conversation_header_direct">Nối trực tiếp</string>
+    <string name="conversation_header_no_route">Ngoài vùng phủ</string>
+    <string name="message_copied">Đã chép tin nhắn</string>
+    <string name="message_stamp">%1$s %2$s</string>
+    <string name="message_status_at">%1$s · %2$s</string>
     <string name="conversation_empty_dm">Chỉ bạn và người này đọc được. Các máy chuyển tiếp ở giữa không xem được nội dung.</string>
     <string name="status_queued">Chờ có đường</string>
     <string name="status_sent">Đã gửi</string>

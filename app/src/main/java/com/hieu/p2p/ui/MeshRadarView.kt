@@ -19,6 +19,7 @@ import com.hieu.p2p.R
 import com.hieu.p2p.mesh.core.GeoPoint
 import com.hieu.p2p.mesh.core.NodeId
 import com.hieu.p2p.mesh.routing.RouteInfo
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.hypot
@@ -266,25 +267,29 @@ class MeshRadarView @JvmOverloads constructor(
         val dim = if (running) 1f else 0.45f
         ringPaint.alpha = (255 * dim).toInt()
 
-        // Rings: metres in geo mode, hops otherwise. Labels sit bottom-right, away from north.
+        // Rings: metres in geo mode, hops otherwise. Labels run along the diagonal farthest from north,
+        // reading outward, so they never sit on the north marker wherever the compass turns it.
+        val showNorth = geoMode || heading != null
+        val north = -(heading ?: 0f).toDouble()
+        val labelAngle = if (!showNorth) 135.0
+        else listOf(45.0, 135.0, 225.0, 315.0).maxBy { a -> abs(((a - north) % 360 + 540) % 360 - 180) }
+        ringLabelPaint.textAlign = if (labelAngle < 180) Paint.Align.LEFT else Paint.Align.RIGHT
         for (i in 1..3) {
             val radius = if (geoMode) geoRadius(ringStep * i) else inner * i / 3f
             canvas.drawCircle(cx, cy, radius, ringPaint)
             val label = if (geoMode) Formats.distance(ringStep * i)
             else context.getString(if (i < 3) R.string.radar_ring else R.string.radar_ring_more, i)
-            val (lx, ly) = screen(140.0, radius)
+            val (lx, ly) = screen(labelAngle, radius)
             drawLabel(canvas, label, lx, ly + 4f * dp, ringLabelPaint)
         }
         if (geoMode && placed.any { !it.placed }) {
             canvas.drawCircle(cx, cy, outer, bandPaint)
             ringLabelPaint.textAlign = Paint.Align.CENTER
             canvas.drawText(context.getString(R.string.radar_unknown_band), cx, cy + outer + 16f * dp, ringLabelPaint)
-            ringLabelPaint.textAlign = Paint.Align.LEFT
         }
 
         // North marker, turned with the compass.
-        if (geoMode || heading != null) {
-            val north = -(heading ?: 0f).toDouble()
+        if (showNorth) {
             val (nx, ny) = screen(north, inner + 14f * dp)
             drawLabel(canvas, context.getString(R.string.dir_n), nx, ny + 4f * dp, northPaint)
         }
@@ -399,11 +404,16 @@ class MeshRadarView @JvmOverloads constructor(
 
     /** Text with a surface-coloured backing so it stays legible over rings and links. */
     private fun drawLabel(canvas: Canvas, text: String, x: Float, baseline: Float, paint: Paint) {
-        val w = paint.measureText(text) / 2 + 4f * dp
+        val width = paint.measureText(text)
+        val left = when (paint.textAlign) {
+            Paint.Align.LEFT -> x
+            Paint.Align.RIGHT -> x - width
+            else -> x - width / 2
+        }
         val m = paint.fontMetrics
         labelBg.color = surface
         labelBg.alpha = 210
-        canvas.drawRoundRect(x - w, baseline + m.ascent - 1f * dp, x + w, baseline + m.descent + 1f * dp, 4f * dp, 4f * dp, labelBg)
+        canvas.drawRoundRect(left - 4f * dp, baseline + m.ascent - 1f * dp, left + width + 4f * dp, baseline + m.descent + 1f * dp, 4f * dp, 4f * dp, labelBg)
         canvas.drawText(text, x, baseline, paint)
     }
 

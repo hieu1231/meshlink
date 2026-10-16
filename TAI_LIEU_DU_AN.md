@@ -1,10 +1,12 @@
 # MeshLink – Tài liệu dự án và tiến độ
 
-Cập nhật: 07/10/2026
+Cập nhật: 16/10/2026
 
 MeshLink là app Android (Kotlin, giao diện XML) nhắn tin, đồng bộ dữ liệu và gọi điện **không cần Internet**. Các điện thoại tự nối với nhau qua Bluetooth/Wi-Fi và chuyển tiếp tin cho nhau nhiều bước nhảy (A → B → C). Toàn bộ giao thức mesh, mã hóa và CRDT là code tự viết; chỉ tầng kết nối trực tiếp (1 bước) dùng Google Nearby Connections.
 
 **Trạng thái ngày 07/10:** mọi tính năng tới tin nhắn thoại và video đã chạy và đã kiểm chứng. **Gọi thoại/video đã chạy thật trên emulator** (test vòng lặp CallEngine 4/4, gọi thử dội lại chính mình có hình và tiếng), **nhưng chưa gọi giữa hai điện thoại thật** (xem mục 5). 40 unit test + 4 test thiết bị cuộc gọi đều đạt.
+
+**Cập nhật ngày 16/10:** đồng bộ giao diện iOS 26 từ `main` (`fb9c943`), giữ màu hệ thống và thanh điều hướng nổi ở cả chế độ sáng/tối. Tin nhắn hỗ trợ chạm để xem giờ, nhấn giữ để sao chép; trạng thái gửi nằm dưới bong bóng, mốc ngày/giờ xuất hiện khi đổi ngày hoặc cách nhau từ 15 phút. Đã sửa nhãn radar tránh ký hiệu Bắc, thông báo cuộc gọi che màn hình gọi, tương thích rung Android 7 và cấu hình bộ mã hóa Android 7–9. Kiểm thử phát hiện và đã sửa lỗi khung hình đến muộn làm hiện lại video sau khi tắt camera. Build debug, 40 unit test, lint (0 lỗi) và 4/4 bài `CallEngineLoopbackTest` đều đạt trên emulator.
 
 ---
 
@@ -101,7 +103,7 @@ payloadLen(4) payload  sigLen(1) signature
 | Màn hình Tìm người (mũi tên, khoảng cách, rung) | Ảnh chụp giả lập |
 | Dò đường (traceroute) | Test mô phỏng (chuỗi, đường vòng) |
 | Chạy nền khi tắt màn hình | Thử thật trên A17 ở chế độ Doze 2,5 phút |
-| Giao diện mới (Be Vietnam Pro, vàng phản quang, sáng/tối) | Ảnh chụp emulator |
+| Giao diện iOS 26 (Be Vietnam Pro, xanh hệ thống, thanh nổi, sáng/tối) | Ảnh chụp emulator; chạm xem giờ và nhấn giữ sao chép tin nhắn |
 
 ---
 
@@ -110,6 +112,7 @@ payloadLen(4) payload  sigLen(1) signature
 - **Thiết bị đã dùng:** Samsung Galaxy A17 (`R58YA0FNAAF`, Android 16), Xiaomi M2102J2SC (`13de0fe`, Android 13, ID mesh "Hieu" `34FD-C2F7`), emulator Pixel_9_Pro_XL.
 - **Build:** `./gradlew :app:assembleDebug` (JAVA_HOME = JBR của Android Studio).
 - **Unit test:** `./gradlew :app:testDebugUnitTest` → hiện có **40 test, đều đạt**.
+- **Lint:** `./gradlew :app:lintDebug` → ngày 16/10: **0 lỗi**, còn 104 cảnh báo.
 - **Test trên thiết bị, không làm mất dữ liệu:** cài `app-debug.apk` và `app-debug-androidTest.apk` bằng `adb install -r`, rồi chạy `adb shell am instrument -w -e class com.hieu.p2p.<TênTest> com.hieu.p2p.test/androidx.test.runner.AndroidJUnitRunner`. **Không dùng** `connectedDebugAndroidTest` trên máy thật, vì lệnh đó gỡ app sau khi chạy.
 - **Màn hình debug để soát giao diện** (chỉ có trong bản debug):
   - `adb shell am start -S -n com.hieu.p2p/.ui.RadarPreviewActivity [--ef heading 60] [--ez select true] [--ez sheet true]`

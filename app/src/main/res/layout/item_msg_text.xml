@@ -4,75 +4,61 @@
     android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingHorizontal="12dp">
 
-    <!-- Public channel only: who wrote it, at the foot of each run of messages. -->
-    <TextView
-        android:id="@+id/avatar"
-        style="@style/Widget.P2p.Avatar"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="6dp"
-        android:textSize="13sp"
-        android:visibility="gone"
-        tools:text="B"
-        tools:visibility="visible" />
-
     <LinearLayout
-        android:id="@+id/bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="13dp"
-        android:paddingTop="7dp"
-        android:paddingBottom="6dp">
+        android:gravity="bottom"
+        android:orientation="horizontal">
 
+        <!-- Public channel only: who wrote it, at the foot of each run of messages. -->
         <TextView
-            android:id="@+id/text_sender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="1dp"
-            android:ellipsize="end"
-            android:maxWidth="@dimen/bubble_max_width"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:id="@+id/avatar"
+            style="@style/Widget.P2p.Avatar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="6dp"
             android:textSize="13sp"
-            tools:text="Bình" />
-
-        <TextView
-            android:id="@+id/text_body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="@dimen/bubble_max_width"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textIsSelectable="true"
-            tools:text="Mình đang ở trường tiểu học, có 12 người" />
+            android:visibility="gone"
+            tools:text="B"
+            tools:visibility="visible" />
 
         <LinearLayout
-            android:id="@+id/meta"
+            android:id="@+id/bubble"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginTop="1dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:paddingHorizontal="13dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="6dp">
 
             <TextView
-                android:id="@+id/text_time"
+                android:id="@+id/text_sender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                tools:text="14:02" />
+                android:layout_marginBottom="1dp"
+                android:ellipsize="end"
+                android:maxWidth="@dimen/bubble_max_width"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textSize="13sp"
+                tools:text="Bình" />
 
-            <ImageView
-                android:id="@+id/icon_status"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_marginStart="3dp"
-                android:importantForAccessibility="no"
-                tools:src="@drawable/ic_done_all" />
+            <TextView
+                android:id="@+id/text_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="@dimen/bubble_max_width"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                tools:text="Mình đang ở trường tiểu học, có 12 người" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_status"
+        style="@style/Widget.P2p.MessageStatus"
+        tools:text="Đã đến nơi"
+        tools:visibility="visible" />
 </LinearLayout>

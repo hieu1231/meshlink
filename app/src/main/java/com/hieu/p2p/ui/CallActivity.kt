@@ -138,6 +138,16 @@ class CallActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        mesh.setCallScreenVisible(true)
+    }
+
+    override fun onStop() {
+        mesh.setCallScreenVisible(false)
+        super.onStop()
+    }
+
     override fun onDestroy() {
         proximity?.takeIf { it.isHeld }?.release()
         super.onDestroy()
