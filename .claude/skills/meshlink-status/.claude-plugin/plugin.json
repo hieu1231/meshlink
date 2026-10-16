@@ -1,0 +1,1 @@
+{ "name": "meshlink-status", "version": "0.1.0", "description": "Band above the prompt: ADB devices, last Gradle build, context fill", "types": "./types/index.d.ts" }

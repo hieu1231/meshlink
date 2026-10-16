@@ -1,0 +1,1 @@
+{ "name": "meshlink-deploy", "version": "0.1.0", "description": "/deploy-all installs the debug APK on every connected ADB device" }

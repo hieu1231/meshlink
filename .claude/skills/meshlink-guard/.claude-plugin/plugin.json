@@ -1,0 +1,1 @@
+{ "name": "meshlink-guard", "version": "0.2.0", "description": "Always protects device identity and signing files; /careful also blocks destructive git and recursive deletes for the session", "types": "./types/index.d.ts" }
